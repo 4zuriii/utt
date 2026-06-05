@@ -1,42 +1,38 @@
-import Test from "../utils/TestInterface.ts";
+import Test from "$utils/TestInterface.ts";
+import { testTask } from "$types/tests.ts";
 
-class Test1 implements Test {
-    args() {
-        return ["1"];
-    }
-
-    stdin() {
-        return "AAA\nAB\n"
-    }
-
-    check(stdout: string, status: number) {
-        return stdout === "BBB\n" && status === 0
-    }
-}
-
-const test = new Test1();
-
-const input = test.stdin()
-const args = test.args()
-
-
-export async function runTest() {
-    const command = new Deno.Command("./program", {
-        args, stdin: "piped", stdout: "piped"
+export async function runTest(testInstance: Test) {
+    const command = new Deno.Command("../program", {
+        stdin: "piped", 
+        stdout: "piped",
+        args: testInstance.args(), 
     })
 
-    const instance = command.spawn()
+    const programInstance = command.spawn()
 
-    const writer = instance.stdin.getWriter()
+    const writer = programInstance.stdin.getWriter()
 
-    writer.write(new TextEncoder().encode(input))
+    writer.write(new TextEncoder().encode(testInstance.stdin()))
     writer.close()
 
-    const { code, stdout } = await instance.output()
+    const { code, stdout } = await programInstance.output()
 
     const outText = new TextDecoder().decode(stdout)
 
-    const result = test.check(outText, code)
+    const result = testInstance.check(outText, code)
 
-    console.log(result)
+    return result
+
+}
+
+export async function runTests(tasks: testTask[]) {
+    for (const task of tasks) {
+        console.log(`Running ${task.name}...`)
+        const result = await runTest(task.obj)
+        if (result) {
+            console.log(task.name + " passed")
+        } else {
+            console.log(task.name + " failed")
+        }
+    }
 }

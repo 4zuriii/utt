@@ -1,17 +1,28 @@
-import { runTest } from "../runner/runner.ts"
+import { prepareTasks } from "$src/runner/loader.ts"
+import { readWorkspace, readPackage } from "$src/runner/finder.ts"
+import { runTests } from "$src/runner/runner.ts"
 
-function run_all_pkgs() {
-    runTest()
+async function runAllPackages() {
+    console.log("Running all...\n\n")
+
+
 }
 
-function run_pkg(pkg: string) {
-    console.log("Running pkg: " + pkg)
+async function runPackage(pkg: string) {
+    console.log("Running package: " + pkg + "\n\n")
+
+    const descriptors = await readPackage(pkg)
+
+    const tasks = await prepareTasks(descriptors)
+
+    runTests(tasks)
+
 }
 
 export function command(pkg: string) {
     if (pkg) {
-        run_pkg(pkg)
+        runPackage(pkg)
     } else {
-        run_all_pkgs()
+        runAllPackages()
     }
 }

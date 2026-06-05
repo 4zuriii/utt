@@ -1,3 +1,8 @@
+// This module is responsible for finding all tests in the workspace which meet given criteria,
+// such as belonging to a package or a group
+
+import { TestDescriptor } from "$types/tests.ts";
+
 async function chdirToWorkspace(): Promise<boolean> {
     try {
         const res = await Deno.lstat(".utt");
@@ -37,52 +42,65 @@ async function dirExists(dir: string) {
 
 export async function readWorkspace() {
     const success = await chdirToWorkspace()
+
+    let tests: TestDescriptor[] = []
     
     if (success) {
         const dirs = Deno.readDir(Deno.cwd())
 
-        for await (const pkg of dirs) {
-            if (!pkg.isDirectory) continue
-
-            console.log(await readPackage(pkg.name))
-        }
-    }
-}
-
-export async function readPackage(path: string) {
-    const success = await dirExists(path)
-
-    const pkg = new Map()
-
-    if (success) {
-        const groups = Deno.readDir(path)
-
-        for await (const dir of groups) {
+        for await (const dir of dirs) {
             if (!dir.isDirectory) continue
 
-            const group = await readGroup(path + "/" + dir.name)
+            const pkg = await readPackage(dir.name)
 
-            pkg.set(dir.name, group)
+            tests = tests.concat(pkg)
         }
     }
 
-    return pkg
+    return tests
 }
 
-export async function readGroup(path: string) {
-    const success = await dirExists(path)
+export async function readPackage(pkg: string) {
+    await chdirToWorkspace()
 
-    const group = []
+    const success = await dirExists(pkg)
+
+    let tests: TestDescriptor[] = []
 
     if (success) {
-        const tests = Deno.readDir(path)
+        const groups = Deno.readDir(pkg)
+        
+        for await (const dir of groups) {
+            if (!dir.isDirectory) continue
+            
+            const group = await readGroup(pkg, dir.name)
 
-        for await (const test of tests) {
-            if (!test.isFile) continue
-
-            group.push(path + "/" + test.name)
+            tests = tests.concat(group)
         }
     }
 
-    return group
+    return tests
+}
+
+export async function readGroup(pkg: string, group: string) {
+    const path = [ pkg, group ].join("/")
+    const success = await dirExists(path)
+
+    const tests: TestDescriptor[] = []
+
+    if (success) {
+        const files = Deno.readDir(path)
+
+        for await (const file of files) {
+            if (!file.isFile) continue
+
+            if (!file.name.endsWith('.ts')) continue;
+
+            const test = new TestDescriptor(pkg, group, file.name)
+
+            tests.push(test)
+        }
+    }
+
+    return tests
 }

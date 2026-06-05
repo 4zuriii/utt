@@ -1,5 +1,9 @@
 {
   "imports": {
+    "$/": "./",
+    "$types/": "./types/",
+    "$src/": "./src/",
+    "$utils/": "./utils/",
     "@inquirer/prompts": "npm:@inquirer/prompts@^8.5.2",
     "@std/path": "jsr:@std/path@^1.1.5",
     "chalk": "npm:chalk@^5.6.2",
