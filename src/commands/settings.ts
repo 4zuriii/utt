@@ -37,7 +37,7 @@ async function settingsPage() {
             {
                 name: "Configure displayed stats",
                 value: Page.stats,
-                description: cfg.get("stats").join(", ")
+                description: cfg.get("stats")?.join(", ")
             },
             new Separator(),
             {
@@ -59,7 +59,7 @@ async function statsPage(): Promise<Page> {
     function choice(value: string) {
         return {
             value,
-            checked: currentSettings.includes(value)
+            checked: currentSettings?.includes(value)
         }
     }
 

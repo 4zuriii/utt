@@ -1,11 +1,20 @@
 import Conf from "conf"
-import denoJson from '$/deno.json' with { type: 'json' }
 
 type ConfigSchema = {
     program: string,
     stats: string[]
 }
 
-const cfg = new Conf<ConfigSchema>({ projectName: denoJson.name })
+const defaults: ConfigSchema = {
+    program: "./program",
+    stats: [ "Real time", "Memory usage" ]
+}
+
+const cfg = new Conf<ConfigSchema>({ 
+    projectName: "utt", 
+    projectSuffix: "", 
+    configName: Deno.cwd().replace("/", "").replaceAll("/", "."), 
+    defaults 
+})
 
 export default cfg
