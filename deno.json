@@ -1,28 +1,37 @@
 {
-  "name": "utt",
-  "version": "0.1.0",
-  "imports": {
-    "$/": "./",
-    "$types/": "./types/",
-    "$src/": "./src/",
-    "$public/": "./public/",
-    "@inquirer/prompts": "npm:@inquirer/prompts@^8.5.2",
-    "@std/path": "jsr:@std/path@^1.1.5",
-    "chalk": "npm:chalk@^5.6.2",
-    "commander": "npm:commander@^15.0.0",
-    "conf": "npm:conf@^15.1.0",
-    "fs-jetpack": "npm:fs-jetpack@^5.1.0",
-    "log-update": "npm:log-update@^8.0.0",
-    "ora": "npm:ora@^9.4.0",
-    "picocolors": "npm:picocolors@^1.1.1",
-    "yargs": "npm:yargs@^18.0.0",
-    "@types/node": "npm:@types/node@^25.9.1"
-  },
-  "tasks": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "deno",
-    "dev": "deno --watch",
-    "install": "deno install --force --config deno.json --global --name utt --allow-sys --allow-read --allow-env --allow-run --allow-write src/cli.ts"
-  },
-  "exports": "./public/*.ts"
+	"name": "utt",
+	"version": "0.1.0",
+	"imports": {
+		"$/": "./",
+		"$types/": "./types/",
+		"$src/": "./src/",
+		"$public/": "./public/",
+		"@inquirer/prompts": "npm:@inquirer/prompts@^8.5.2",
+		"@std/path": "jsr:@std/path@^1.1.5",
+		"chalk": "npm:chalk@^5.6.2",
+		"commander": "npm:commander@^15.0.0",
+		"conf": "npm:conf@^15.1.0",
+		"fs-jetpack": "npm:fs-jetpack@^5.1.0",
+		"log-update": "npm:log-update@^8.0.0",
+		"ora": "npm:ora@^9.4.0",
+		"picocolors": "npm:picocolors@^1.1.1",
+		"yargs": "npm:yargs@^18.0.0",
+		"@types/node": "npm:@types/node@^25.9.1"
+	},
+	"tasks": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "deno",
+		"dev": "deno --watch",
+		"install": "deno install --force --config deno.json --global --name utt --allow-sys --allow-read --allow-env --allow-run --allow-write src/cli.ts"
+	},
+	"exports": "./public/*.ts",
+	"fmt": {
+		"useTabs": true,
+		"lineWidth": 100,
+		"indentWidth": 4,
+		"semiColons": false,
+		"singleQuote": false,
+		"proseWrap": "always",
+		"exclude": [".utt"]
+	}
 }
