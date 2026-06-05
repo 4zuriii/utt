@@ -1,4 +1,4 @@
-import Test from "$utils/TestInterface.ts";
+import type Test from "$public/TestInterface.ts";
 
 export class TestDescriptor {
     #className: string;

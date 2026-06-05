@@ -1,5 +1,5 @@
 import Test from "$utils/TestInterface.ts";
-import { testTask } from "$types/tests.ts";
+import { TestDescriptor, testTask } from "$types/tests.ts";
 
 export async function runTest(testInstance: Test) {
     const command = new Deno.Command("../program", {
@@ -26,6 +26,9 @@ export async function runTest(testInstance: Test) {
 }
 
 export async function runTests(tasks: testTask[]) {
+    if (tasks.length == 0) {
+        console.log("WARNING: No tests found, you might have misspelled an argument")
+    }
     for (const task of tasks) {
         console.log(`Running ${task.name}...`)
         const result = await runTest(task.obj)

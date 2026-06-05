@@ -1,9 +1,12 @@
 {
+  "name": "utt",
+  "version": "0.1.0",
   "imports": {
     "$/": "./",
     "$types/": "./types/",
     "$src/": "./src/",
-    "$utils/": "./utils/",
+    "$public/": "./public/",
+    "$config/": "./config/",
     "@inquirer/prompts": "npm:@inquirer/prompts@^8.5.2",
     "@std/path": "jsr:@std/path@^1.1.5",
     "chalk": "npm:chalk@^5.6.2",
@@ -20,6 +23,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "deno",
     "dev": "deno --watch",
-    "install": "deno install --force --config deno.json --global --name utt --allow-read --allow-env --allow-run --allow-write src/cli.ts"
-  }
+    "install": "deno install --force --config deno.json --global --name utt --allow-sys --allow-read --allow-env --allow-run --allow-write src/cli.ts"
+  },
+  "exports": "$public/"
 }
