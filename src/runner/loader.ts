@@ -15,17 +15,15 @@ export async function loadTest(path: string) {
 	return new Test()
 }
 
-export async function prepareTasks(
-	descriptors: TestDescriptor[],
-): Promise<testTask[]> {
-	return await Promise.all(descriptors.map(async (descriptor) => {
-		const task: testTask = {
-			pkg: descriptor.pkg,
-			group: descriptor.group,
-			name: descriptor.className.split(".")[0],
-			obj: await loadTest(descriptor.resolveClassPath()),
-		}
+async function createTask(descriptor: TestDescriptor) {
+	return {
+		pkg: descriptor.pkg,
+		group: descriptor.group,
+		name: descriptor.className.split(".")[0],
+		obj: await loadTest(descriptor.resolveClassPath()),
+	}
+}
 
-		return task
-	}))
+export async function prepareTasks(descriptors: TestDescriptor[]): Promise<testTask[]> {
+	return await Promise.all(descriptors.map(createTask))
 }
