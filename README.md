@@ -44,19 +44,15 @@ Or scroll to documentation for more
 
 ### Writing tests:
 
-Create a test package:
+Edit a package
 ```bash
-$ utt create <name>
-```
-
-Edit a chosen test package:
-```bash
-$ utt edit <package>
+$ utt package <name>
+# Following commands will after the given package. If the package doesn't exist, it gets created
 ```
 
 Create a test scenario
 ```bash
-$ utt add foo.bar [options]
+$ utt create foo.bar [options]
 # Creates a test bar.ts, in the group foo, in the package set by edit
 ```
 
@@ -67,6 +63,6 @@ $ utt compile <package>
 
 Share your package:
 ```bash
-$ utt push <link>
+$ utt push <pkg> <link>
 ```
 
