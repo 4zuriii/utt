@@ -13,28 +13,32 @@ async function findRoot(path: string): Promise<string> {
     }
 }
 
-export async function getRoot() {
+export async function getRootDir() {
     return await findRoot(Deno.cwd())
 }
 
 export async function getWorkspace(): Promise<string> {
-    return join(await getRoot(), '.utt')
+    return join(await getRootDir(), '.utt')
 }
 
-export async function getTests() {
-    const path = join(await getWorkspace(), 'tests')
+async function getDir(folder: string) {
+    const path = join(await getWorkspace(), folder)
 
     await ensureDir(path)
 
     return path
 }
 
-export async function getCreations() {
-    const path = join(await getWorkspace(), 'creations')
+export async function getTestsDir() {
+    return await getDir('tests')
+}
 
-    await ensureDir(path)
+export async function getSrcDir() {
+    return await getDir('src')
+}
 
-    return path
+export async function getDistDir() {
+    return await getDir('dist')
 }
 
 export async function getOrInitWorkspace(): Promise<string> {
@@ -47,4 +51,8 @@ export async function getOrInitWorkspace(): Promise<string> {
 
         return join(Deno.cwd(), '.utt')
     }
+}
+
+export async function assertDir(path: string, msg?: string) {
+    if (!await exists(path, { isDirectory: true })) throw new Error(msg ?? '')
 }
