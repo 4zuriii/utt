@@ -6,7 +6,9 @@
     "jsr:@std/internal@^1.0.14": "1.0.14",
     "jsr:@std/json@^1.1.0": "1.1.0",
     "jsr:@std/path@^1.1.5": "1.1.5",
+    "jsr:@std/streams@^1.0.17": "1.1.1",
     "jsr:@std/streams@^1.1.0": "1.1.1",
+    "jsr:@std/tar@~0.1.10": "0.1.10",
     "npm:@inquirer/prompts@^8.5.2": "8.5.2_@types+node@25.9.1",
     "npm:@types/node@^25.9.1": "25.9.1",
     "npm:archiver@8": "8.0.0",
@@ -36,7 +38,7 @@
     "@std/json@1.1.0": {
       "integrity": "93330d3ed4054d6b1ffe54b075432c80a5f671be77277b978931e018014cb1cc",
       "dependencies": [
-        "jsr:@std/streams"
+        "jsr:@std/streams@^1.1.0"
       ]
     },
     "@std/path@1.1.5": {
@@ -47,6 +49,12 @@
     },
     "@std/streams@1.1.1": {
       "integrity": "92556d350e537e9dce527a6d08f6f15be3ff65e656079dea69d15252187c7613"
+    },
+    "@std/tar@0.1.10": {
+      "integrity": "6bf907f3a4bc8bfef42973ba132d946756a6161ef6b914a9e1c06debe664db17",
+      "dependencies": [
+        "jsr:@std/streams@^1.0.17"
+      ]
     }
   },
   "npm": {
@@ -822,6 +830,7 @@
       "jsr:@std/fs@^1.0.24",
       "jsr:@std/json@^1.1.0",
       "jsr:@std/path@^1.1.5",
+      "jsr:@std/tar@~0.1.10",
       "npm:@inquirer/prompts@^8.5.2",
       "npm:@types/node@^25.9.1",
       "npm:archiver@8",

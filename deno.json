@@ -11,6 +11,7 @@
 		"@std/fs": "jsr:@std/fs@^1.0.24",
 		"@std/json": "jsr:@std/json@^1.1.0",
 		"@std/path": "jsr:@std/path@^1.1.5",
+		"@std/tar": "jsr:@std/tar@^0.1.10",
 		"archiver": "npm:archiver@^8.0.0",
 		"chalk": "npm:chalk@^5.6.2",
 		"commander": "npm:commander@^15.0.0",
@@ -28,7 +29,7 @@
 		"dev": "deno --watch",
 		"install": "deno install --force --config deno.json --global --name utt --allow-all src/cli.ts"
 	},
-	"exports": "./public/*.ts",
+	"exports": "./src/cli.ts",
 	"fmt": {
 		"useTabs": true,
 		"lineWidth": 100,
