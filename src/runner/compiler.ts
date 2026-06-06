@@ -4,12 +4,11 @@ import { TarStream } from '@std/tar'
 import { loadTest } from "$src/runner/loader.ts"
 import { ensureDir, walk } from "@std/fs"
 import { relative, join, basename } from "@std/path"
-import { assertDir, getSrcDir, getTestsDir, getRootDir } from "$src/utils/dirs.ts"
+import { assertDir, getSrcDir, getTestsDir } from "$src/utils/dirs.ts"
 import cfg from "$src/utils/state.ts"
 
 export async function compilePackage(pkg: string, program?: string) {
     program = program ?? cfg.get("cfg.program")
-    program = join(await getRootDir(), program)
 
 	const src = join(
 		await getSrcDir(),

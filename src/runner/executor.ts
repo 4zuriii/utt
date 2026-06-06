@@ -11,6 +11,7 @@ export async function executeTask(program: string, cwd: string, test: ITest) {
 	})
 
 	const instance = command.spawn()
+	
 	const writer = instance.stdin.getWriter()
 	writer.write(new TextEncoder().encode(test.stdin()))
 	writer.close()
