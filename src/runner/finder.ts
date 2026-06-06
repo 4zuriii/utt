@@ -2,17 +2,12 @@
 // such as belonging to a package or a group
 
 import { TestDescriptor } from "$types/tests.ts"
-import { getTests } from "$src/utils/paths.ts"
+import { getTestsDir } from "$src/utils/dirs.ts"
 import { join } from "@std/path/join"
-
-async function assertDir(dir: string) {
-	const res = await Deno.lstat(dir)
-
-	if (!res.isDirectory) throw new Deno.errors.NotADirectory()
-}
+import { parse } from "@std/path/parse"
 
 export async function readAll() {
-	const path = await getTests()
+	const path = await getTestsDir()
 
 	let tests: TestDescriptor[] = []
 	const dirs = Deno.readDir(path)
@@ -29,9 +24,7 @@ export async function readAll() {
 }
 
 export async function readPackage(pkg: string, path?: string | undefined) {
-	if (!path) {
-		path = await getTests()
-	}
+	path = path ?? await getTestsDir()
 
 	let tests: TestDescriptor[] = []
 
@@ -45,6 +38,8 @@ export async function readPackage(pkg: string, path?: string | undefined) {
 		tests = tests.concat(group)
 	}
 
+	tests = tests.concat(await readGroup(pkg, '', path))
+
 	return tests
 }
 
@@ -54,11 +49,12 @@ async function readGroup(pkg: string, group: string, path: string) {
 	const files = Deno.readDir(join(path, pkg, group))
 
 	for await (const file of files) {
+		const f = parse(file.name)
+
 		if (!file.isFile) continue
+		if (f.ext !== ".ts") continue
 
-		if (!file.name.endsWith(".ts")) continue
-
-		const test = new TestDescriptor(pkg, group, file.name)
+		const test = new TestDescriptor(pkg, group, f.name)
 
 		tests.push(test)
 	}

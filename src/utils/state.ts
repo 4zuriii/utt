@@ -1,6 +1,6 @@
 import Conf from "conf"
 
-import { getOrInitWorkspace } from "$src/utils/paths.ts"
+import { getOrInitWorkspace } from "$src/utils/dirs.ts"
 
 type ConfigSchema = {
 	program: string
