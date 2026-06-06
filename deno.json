@@ -26,7 +26,7 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "deno",
 		"dev": "deno --watch",
-		"install": "deno install --force --config deno.json --global --name utt --allow-sys --allow-read --allow-env --allow-run --allow-write src/cli.ts"
+		"install": "deno install --force --config deno.json --global --name utt --allow-all src/cli.ts"
 	},
 	"exports": "./public/*.ts",
 	"fmt": {
