@@ -2,110 +2,65 @@
 // such as belonging to a package or a group
 
 import { TestDescriptor } from "$types/tests.ts"
+import { getTests } from "$src/utils/paths.ts"
+import { join } from "@std/path/join"
 
-async function chdirToWorkspace(): Promise<boolean> {
-	try {
-		const res = await Deno.lstat(".utt")
+async function assertDir(dir: string) {
+	const res = await Deno.lstat(dir)
 
-		if (!res.isDirectory) throw new Deno.errors.NotADirectory()
-
-		Deno.chdir(".utt")
-
-		return true
-	} catch (error) {
-		if (
-			error instanceof Deno.errors.NotADirectory ||
-			error instanceof Deno.errors.NotFound
-		) {
-			if (Deno.cwd() == "/") return false
-
-			Deno.chdir("..")
-			return chdirToWorkspace()
-		}
-
-		throw new Error("I/O Error")
-	}
+	if (!res.isDirectory) throw new Deno.errors.NotADirectory()
 }
 
-async function dirExists(dir: string) {
-	try {
-		const res = await Deno.lstat(dir)
-
-		if (!res.isDirectory) throw new Deno.errors.NotADirectory()
-
-		return true
-	} catch (error) {
-		if (
-			error instanceof Deno.errors.NotADirectory ||
-			error instanceof Deno.errors.NotFound
-		) {
-			return false
-		}
-
-		throw new Error("I/O Error")
-	}
-}
-
-export async function readWorkspace() {
-	const success = await chdirToWorkspace()
+export async function readAll() {
+	const path = await getTests()
 
 	let tests: TestDescriptor[] = []
+	const dirs = Deno.readDir(path)
 
-	if (success) {
-		const dirs = Deno.readDir(Deno.cwd())
+	for await (const dir of dirs) {
+		if (!dir.isDirectory) continue
 
-		for await (const dir of dirs) {
-			if (!dir.isDirectory) continue
+		const pkg = await readPackage(dir.name, path)
 
-			const pkg = await readPackage(dir.name)
-
-			tests = tests.concat(pkg)
-		}
+		tests = tests.concat(pkg)
 	}
 
 	return tests
 }
 
-export async function readPackage(pkg: string) {
-	await chdirToWorkspace()
-
-	const success = await dirExists(pkg)
+export async function readPackage(pkg: string, path?: string | undefined) {
+	if (!path) {
+		path = await getTests()
+	}
 
 	let tests: TestDescriptor[] = []
 
-	if (success) {
-		const groups = Deno.readDir(pkg)
+	const groups = Deno.readDir(join(path, pkg))
 
-		for await (const dir of groups) {
-			if (!dir.isDirectory) continue
+	for await (const dir of groups) {
+		if (!dir.isDirectory) continue
 
-			const group = await readGroup(pkg, dir.name)
+		const group = await readGroup(pkg, dir.name, path)
 
-			tests = tests.concat(group)
-		}
+		tests = tests.concat(group)
 	}
 
 	return tests
 }
 
-export async function readGroup(pkg: string, group: string) {
-	const path = [pkg, group].join("/")
-	const success = await dirExists(path)
-
+async function readGroup(pkg: string, group: string, path: string) {
 	const tests: TestDescriptor[] = []
 
-	if (success) {
-		const files = Deno.readDir(path)
+	const files = Deno.readDir(join(path, pkg, group))
 
-		for await (const file of files) {
-			if (!file.isFile) continue
+	for await (const file of files) {
+		if (!file.isFile) continue
 
-			if (!file.name.endsWith(".ts")) continue
+		if (!file.name.endsWith(".ts")) continue
 
-			const test = new TestDescriptor(pkg, group, file.name)
+		const test = new TestDescriptor(pkg, group, file.name)
 
-			tests.push(test)
-		}
+		tests.push(test)
 	}
 
 	return tests

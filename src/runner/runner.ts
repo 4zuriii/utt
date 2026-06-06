@@ -1,6 +1,5 @@
 import type Test from "$public/TestInterface.ts"
 import type { testTask } from "$types/tests.ts"
-import type { Option } from "commander"
 
 export async function runTest(testInstance: Test, program: string) {
 	const command = new Deno.Command(program, {

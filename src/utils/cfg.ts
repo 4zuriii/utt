@@ -1,5 +1,7 @@
 import Conf from "conf"
 
+import { getOrInitWorkspace } from "$src/utils/paths.ts"
+
 type ConfigSchema = {
 	program: string
 	stats: string[]
@@ -13,7 +15,8 @@ const defaults: ConfigSchema = {
 const cfg = new Conf<ConfigSchema>({
 	projectName: "utt",
 	projectSuffix: "",
-	configName: Deno.cwd().replace("/", "").replaceAll("/", "."),
+	cwd: await getOrInitWorkspace(),
+	configName: 'utt-config',
 	defaults,
 })
 
