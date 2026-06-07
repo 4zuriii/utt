@@ -17,7 +17,7 @@ export async function loadTest(path: string): Promise<Test> {
 }
 
 export async function parseUtest(path: string): Promise<{ test: Test; expected: TestResult }> {
-	const file = await Deno.open(path)
+	using file = await Deno.open(path)
 
 	const stream = file.readable.pipeThrough(new UntarStream())
 
@@ -29,7 +29,7 @@ export async function parseUtest(path: string): Promise<{ test: Test; expected: 
 		expected: {
 			files: new Map<string, string>()
 		}
-	 }
+	}
 
 	for await (const file of stream) {
 		if (!file.readable) continue

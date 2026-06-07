@@ -65,11 +65,11 @@ async function compileTest(src: string, dest: string, test: string, program: str
 
     const testInstance: Test = await loadTest(path)
     
-    const testFile = await Deno.open(path)
+    using testFile = await Deno.open(path)
     
     // prepare the test package for writing
     await ensureDir(dest)
-    const archive = await Deno.open(join(
+    using archive = await Deno.open(join(
         dest,
         test.replace(".js", ".utest")
     ), {
