@@ -1,11 +1,13 @@
+// This module is responsible for the actual running of the tested program
+
 import type { Test, TestResult } from "utt"
 import { makeTemp } from "$src/utils/temp.ts"
 import { relative } from "@std/path"
 import { walk } from "@std/fs"
 import { toText } from "@std/streams/to-text"
 
-// runs a test and returns its output
-export async function executeTest(test: Test, program: string) {
+// runs a test and returns data regarding its execution
+export async function executeTest(test: Test, program: string): Promise<TestResult> {
 	// prepare the task
 	const temp = await makeTemp()
 

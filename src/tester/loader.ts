@@ -1,3 +1,5 @@
+// This module is responsible for loading tests, in particular this is where Test classe sget instantiated
+
 import type { Test, Metadata, TestResult } from "utt"
 import { UntarStream } from "@std/tar/untar-stream"
 import { toJson, toText } from '@std/streams'
@@ -14,7 +16,7 @@ export async function loadTest(path: string): Promise<Test> {
 	return new Test()
 }
 
-export async function parseUtest(path: string) {
+export async function parseUtest(path: string): Promise<{ test: Test; expected: TestResult }> {
 	const file = await Deno.open(path)
 
 	const stream = file.readable.pipeThrough(new UntarStream())

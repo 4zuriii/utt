@@ -9,6 +9,7 @@ import { compileCommand } from "$src/commands/compile.ts"
 import { join } from "@std/path/join"
 import { getRootDir } from "$src/utils/dirs.ts"
 import cfg from "$src/utils/state.ts"
+import { resolve } from "@std/path/resolve"
 
 const program = new Command()
 
@@ -37,14 +38,7 @@ const programOption = new Option("--program, -p <path>", "Specify the path to th
 			cfg.get("cfg.program")
 		)
 	)
-	.argParser(programParser)
-
-function programParser(arg: string) {
-	return join(
-		Deno.cwd(),
-		arg
-	)
-}
+	.argParser(path => resolve(path))
 
 program.command("test")
 	.description("Runs tests")

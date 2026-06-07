@@ -1,7 +1,9 @@
+// This module is responsible for traversing the .utt/src directory and compiling source .js test classes into actual tests
+
 import type { Test } from "utt"
-import { executeTest } from "$src/runner/executor.ts"
+import { executeTest } from "$src/tester/executor.ts"
 import { TarStream } from '@std/tar'
-import { loadTest } from "$src/runner/loader.ts"
+import { loadTest } from "$src/tester/loader.ts"
 import { ensureDir } from "@std/fs"
 import { join } from "@std/path"
 import { assertDir, getSrcDir, getTestsDir } from "$src/utils/dirs.ts"
