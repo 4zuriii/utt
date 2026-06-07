@@ -110,7 +110,7 @@ program.command("delete")
 
 program.command("compile")
 	.description("Compile a package into .utest files")
-	.argument("<package>")
+	.argument("[package]")
 	.addOption(programOption)
 	.action(compileCommand)
 
