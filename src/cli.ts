@@ -30,7 +30,7 @@ const preserveOutputOption = new Option(
 
 const statsOptions = new Option("--stats", "Specify stats to report")
 
-const programOption = new Option("--program, -p", "Specify the path to the tested program")
+const programOption = new Option("--program, -p <path>", "Specify the path to the tested program")
 	.default(
 		join(
 			await getRootDir(),

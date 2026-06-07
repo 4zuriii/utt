@@ -1,12 +1,11 @@
-import type { ITest } from "$public/TestInterface.ts"
-import { executeTask } from "$src/runner/executor.ts"
+import type { FullTestInterface } from "$public/core.ts"
+import { executeTest } from "$src/runner/executor.ts"
 import { TarStream } from '@std/tar'
 import { loadTest } from "$src/runner/loader.ts"
-import { ensureDir, walk } from "@std/fs"
-import { relative, join } from "@std/path"
+import { ensureDir } from "@std/fs"
+import { join } from "@std/path"
 import { assertDir, getSrcDir, getTestsDir } from "$src/utils/dirs.ts"
 import cfg from "$src/utils/state.ts"
-import { makeTemp } from "$src/utils/temp.ts"
 
 export async function compilePackage(pkg: string, program?: string) {
     program = program ?? cfg.get("cfg.program")
@@ -61,7 +60,7 @@ async function compileGroup(src: string, dest: string, program: string) {
 async function compileTest(src: string, dest: string, test: string, program: string) {
     const path = join(src, test)
 
-    const testInstance: ITest = await loadTest(path)
+    const testInstance: FullTestInterface = await loadTest(path)
     
     const testFile = await Deno.open(path)
     
@@ -74,9 +73,7 @@ async function compileTest(src: string, dest: string, test: string, program: str
         write: true,
     })
     
-    const temp = await makeTemp()
-    
-    const result = await executeTask(program, temp, testInstance)
+    const result = await executeTest(testInstance, program)
     
     const stream = new ReadableStream({
         async start(controller) {
@@ -89,7 +86,7 @@ async function compileTest(src: string, dest: string, test: string, program: str
             });
 
             // save the output of the test into the archive
-            const out = new TextEncoder().encode(result.output)
+            const out = new TextEncoder().encode(result.stdout)
 
             controller.enqueue({
                 type: "file",
@@ -110,20 +107,15 @@ async function compileTest(src: string, dest: string, test: string, program: str
             })
 
             // save all the files created by the execution of the test
-            for await (const entry of walk(temp, { includeDirs: false, includeSymlinks: false })) {
-                const path = join('files', relative(temp, entry.path))
-                
-                const file = await Deno.open(entry.path, { read: true })
-                const stat = await file.stat()
-                
+            for (const [ file, content ] of result.files) {
+                const bytes = new TextEncoder().encode(content)
+
                 controller.enqueue({
                     type: "file",
-                    path,
-                    size: stat.size,
-                    readable: file.readable,
-                });
-
-                file.close()
+                    path: file,
+                    size: bytes.byteLength,
+                    readable: ReadableStream.from([bytes])
+                })
             }
         
             controller.close();

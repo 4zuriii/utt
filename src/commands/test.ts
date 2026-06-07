@@ -1,4 +1,3 @@
-import { prepareTasks } from "$src/runner/loader.ts"
 import { readPackage, readAll } from "$src/runner/finder.ts"
 import type { TestDescriptor } from "$types/tests.ts"
 import { runTests } from "$src/runner/runner.ts"

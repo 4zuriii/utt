@@ -18,12 +18,10 @@
 		"chalk": "npm:chalk@^5.6.2",
 		"commander": "npm:commander@^15.0.0",
 		"conf": "npm:conf@^15.1.0",
-		"fs-jetpack": "npm:fs-jetpack@^5.1.0",
 		"log-update": "npm:log-update@^8.0.0",
 		"ora": "npm:ora@^9.4.0",
-		"picocolors": "npm:picocolors@^1.1.1",
-		"yargs": "npm:yargs@^18.0.0",
-		"@types/node": "npm:@types/node@^25.9.1"
+		"@types/node": "npm:@types/node@^25.9.1",
+		"yoctocolors": "npm:yoctocolors@^2.1.2"
 	},
 	"tasks": {
 		"test": "echo \"Error: no test specified\" && exit 1",

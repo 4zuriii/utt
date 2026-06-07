@@ -1,15 +1,32 @@
-import type { ITest, Metadata } from "$public/TestInterface.ts";
+// deno-lint-ignore-file
+import { FullTestInterface, TestInterface, TestResult, Test } from "$public/core.ts"
 
-export default class Test implements ITest {
+@Test
+class TestClass implements TestInterface {
+    // Pass arguments to the program
     args(): string[] {
-        return [ ];
+        return [ "" ];
+    }
+    
+    // Generate the input
+    // see docs for helpers to create the input
+    input(): void {
+        this.line("")
     }
 
-    stdin(): string {
-        return ""
-    }
+    // optional: parse the output
+    /*
+    parse(stdout: string): string {
+        return this.hash(stdout)   
+    }    
+    */
 
-    check(stdout: string, meta: Metadata): boolean {
-        return true
+    // Verify that the test passed succesfully
+    // use a helper or write the logic yourself
+    check(output: TestResult, expected: TestResult): void {
+        this.assertExactOutput(output, expected)
     }
 }
+
+interface TestClass extends FullTestInterface {}
+export default TestClass

@@ -1,5 +1,5 @@
 import type { TestDescriptor, testTask } from "$types/tests.ts"
-import type { ITest, Metadata } from "$public/TestInterface.ts"
+import type { FullTestInterface, Metadata, TestResult } from "$public/core.ts"
 import { UntarStream } from "@std/tar/untar-stream"
 import { toJson, toText } from '@std/streams'
 import { encodeBase64Url } from '@std/encoding'
@@ -9,7 +9,7 @@ import { encodeBase64Url } from '@std/encoding'
  *
  * @param path path to the class, relative to `.utt/tests/` directory
  */
-export async function loadTest(path: string): Promise<ITest> {
+export async function loadTest(path: string): Promise<FullTestInterface> {
 
 	const Test = (await import(path)).default
 
@@ -22,11 +22,14 @@ export async function parseUtest(path: string) {
 	const stream = file.readable.pipeThrough(new UntarStream())
 
 	const result: {
-		test?: ITest,
-		meta?: Metadata | object,
-		out?: string
-		files: Map<string, string>
-	} = { files: new Map<string, string>() }
+		test: Partial<FullTestInterface>,
+		expected: Partial<TestResult>
+	} = { 
+		test: {},
+		expected: {
+			files: new Map<string, string>()
+		}
+	 }
 
 	for await (const file of stream) {
 		if (!file.readable) continue
@@ -34,19 +37,23 @@ export async function parseUtest(path: string) {
 		if (file.path == 'test.ts') {
 			const encoded = encodeBase64Url(await toText(file.readable))
 
-			const test: ITest = await loadTest(`data:text/typescript;base64,${encoded}`)
+			const test: FullTestInterface = await loadTest(`data:text/typescript;base64,${encoded}`)
 
 			result.test = test
 		} else if (file.path == "model.out") {
-			result.out = await toText(file.readable)
+			result.expected.stdout = await toText(file.readable)
 		} else if (file.path == "meta.json") {
-			result.meta = await toJson(file.readable) ?? {}
+			result.expected.meta = await toJson(file.readable) as Metadata
 		} else {
-			result.files.set(file.path, await toText(file.readable))
+			// ?. is ugly, but tsc won't stop bitching otherwise even though it's fine
+			result.expected.files?.set(file.path, await toText(file.readable))
 		}
 	}
 
-	return result
+	return result as {
+		test: FullTestInterface,
+		expected: TestResult
+	}
 }
 
 export async function prepareTasks(descriptors: TestDescriptor[]): Promise<testTask[]> {
