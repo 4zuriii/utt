@@ -1,7 +1,7 @@
 import type { FullTestInterface, TestInterface, TestResult } from "utt"
-import { Test } from "utt"
+import { TestDec } from "utt"
 
-@Test
+@TestDec
 class TestClass implements TestInterface {
     // Pass arguments to the program
     args(): string[] {

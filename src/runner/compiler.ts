@@ -1,4 +1,4 @@
-import type { FullTestInterface } from "utt"
+import type { Test } from "utt"
 import { executeTest } from "$src/runner/executor.ts"
 import { TarStream } from '@std/tar'
 import { loadTest } from "$src/runner/loader.ts"
@@ -46,7 +46,7 @@ async function compileGroup(src: string, dest: string, program: string) {
 	const tests = Deno.readDir(src)
 
 	for await (const test of tests) {
-		if (!test.isFile || !test.name.endsWith('.ts')) continue
+		if (!test.isFile || !test.name.endsWith('.js')) continue
 
         compileTest(
             src,
@@ -58,29 +58,33 @@ async function compileGroup(src: string, dest: string, program: string) {
 }
 
 async function compileTest(src: string, dest: string, test: string, program: string) {
+    // path to test
     const path = join(src, test)
 
-    const testInstance: FullTestInterface = await loadTest(path)
+    const testInstance: Test = await loadTest(path)
     
     const testFile = await Deno.open(path)
     
+    // prepare the test package for writing
     await ensureDir(dest)
     const archive = await Deno.open(join(
         dest,
-        test.replace(".ts", ".utest")
+        test.replace(".js", ".utest")
     ), {
         create: true,
         write: true,
     })
     
+    // generate the expected answer
     const result = await executeTest(testInstance, program)
+    testInstance.assertCode?.(result.meta.code)
     
     const stream = new ReadableStream({
         async start(controller) {
             // copy test.ts class into the archive
             controller.enqueue({
                 type: "file",
-                path: "test.ts",
+                path: "test.js",
                 size: (await testFile.stat()).size,
                 readable: testFile.readable,
             });

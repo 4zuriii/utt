@@ -1094,7 +1094,6 @@
       "npm:conf@^15.1.0",
       "npm:log-update@8",
       "npm:ora@^9.4.0",
-      "npm:sucrase@^3.35.0",
       "npm:yoctocolors@^2.1.2"
     ]
   }

@@ -1,4 +1,4 @@
-import type { FullTestInterface, Metadata, TestResult } from "utt"
+import type { Test, Metadata, TestResult } from "utt"
 import { UntarStream } from "@std/tar/untar-stream"
 import { toJson, toText } from '@std/streams'
 import { encodeBase64Url } from '@std/encoding'
@@ -8,7 +8,7 @@ import { encodeBase64Url } from '@std/encoding'
  *
  * @param path path to the class, relative to `.utt/tests/` directory
  */
-export async function loadTest(path: string): Promise<FullTestInterface> {
+export async function loadTest(path: string): Promise<Test> {
 	const Test = (await import(path)).default
 
 	return new Test()
@@ -20,7 +20,7 @@ export async function parseUtest(path: string) {
 	const stream = file.readable.pipeThrough(new UntarStream())
 
 	const result: {
-		test: Partial<FullTestInterface>,
+		test: Partial<Test>,
 		expected: Partial<TestResult>
 	} = { 
 		test: {},
@@ -32,10 +32,10 @@ export async function parseUtest(path: string) {
 	for await (const file of stream) {
 		if (!file.readable) continue
 
-		if (file.path == 'test.ts') {
+		if (file.path == 'test.js') {
 			const encoded = encodeBase64Url(await toText(file.readable))
 
-			const test: FullTestInterface = await loadTest(`data:text/typescript;base64,${encoded}`)
+			const test: Test = await loadTest(`data:text/javascript;base64,${encoded}`)
 
 			result.test = test
 		} else if (file.path == "model.out") {
@@ -49,7 +49,7 @@ export async function parseUtest(path: string) {
 	}
 
 	return result as {
-		test: FullTestInterface,
+		test: Test,
 		expected: TestResult
 	}
 }

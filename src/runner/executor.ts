@@ -1,11 +1,11 @@
-import type { FullTestInterface, TestResult } from "utt"
+import type { Test, TestResult } from "utt"
 import { makeTemp } from "$src/utils/temp.ts"
 import { relative } from "@std/path"
 import { walk } from "@std/fs"
 import { toText } from "@std/streams/to-text"
 
 // runs a test and returns its output
-export async function executeTest(test: FullTestInterface, program: string) {
+export async function executeTest(test: Test, program: string) {
 	// prepare the task
 	const temp = await makeTemp()
 
@@ -25,7 +25,7 @@ export async function executeTest(test: FullTestInterface, program: string) {
 	const { code, stdout } = await instance.output()
 
 	let output = new TextDecoder().decode(stdout)
-	if (test.parse) output = test.parse(output)
+	output = test.parse?.(output) ?? output		// parse the output if a parsing function is defined
 
 	// TODO: Rework logic to handle files as ReadableStream throughout the program
 	const files = new Map<string, string>()

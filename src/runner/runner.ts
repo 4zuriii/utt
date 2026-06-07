@@ -2,7 +2,7 @@ import type { TestDescriptor } from "$types/tests.ts"
 import { makeTemp } from "$src/utils/temp.ts"
 import { parseUtest } from "$src/runner/loader.ts"
 import { executeTest } from "$src/runner/executor.ts"
-import type { FullTestInterface, TestResult } from "utt"
+import type { Test, TestResult } from "utt"
 
 type TestReport = (
     {
@@ -14,7 +14,7 @@ type TestReport = (
     }
 )
 
-function validateTest(output: TestResult, expected: TestResult, test: FullTestInterface): TestReport {
+function validateTest(output: TestResult, expected: TestResult, test: Test): TestReport {
     try {
         test.check(output, expected)
         return {state: true}
