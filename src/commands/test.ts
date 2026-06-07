@@ -1,6 +1,6 @@
-import { readPackage, readAll } from "$src/runner/finder.ts"
+import { readPackage, readAll } from "$src/tester/finder.ts"
 import type { TestDescriptor } from "$types/tests.ts"
-import { runTests } from "$src/runner/runner.ts"
+import { runTests } from "$src/tester/runner.ts"
 
 type OptionsObject = {
 	program: string

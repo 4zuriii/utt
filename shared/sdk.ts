@@ -10,8 +10,31 @@ export type TestResult = {
 	files: Map<string, string>
 }
 
+class stdinStream {
+	#controller!: ReadableStreamDefaultController
+	#stream: ReadableStream
+
+	constructor() {
+		this.#stream = new ReadableStream({
+			start: controller => {
+				this.#controller = controller
+			}
+		})
+	}
+
+	push(text: string) {
+		this.#controller.enqueue(Buffer.from(text))
+	}
+
+	finish(): ReadableStream {
+		this.#controller.close()
+
+		return this.#stream
+	}
+}
+
 export abstract class Test {
-	#stdin = ""
+	#stdin = new stdinStream()
 
 	// methods to be implemented by the user
 	abstract args(): string[]
@@ -22,13 +45,13 @@ export abstract class Test {
 	// HELPER UTILITIES
 
 	// input helpers
-	line(str: string) {
-		return this.raw(str.concat("\n"))
+	line(text: string) {
+		this.#stdin.push(text)
+		this.#stdin.push("\n")
 	}
-
-	raw(str: string) {
-		this.#stdin = this.#stdin.concat(str)
-		return this.#stdin
+	
+	append(text: string) {
+		this.#stdin.push(text)
 	}
 
 	// parsing utilities
@@ -43,10 +66,10 @@ export abstract class Test {
 	}
 
 	// DEV FUNCTIONS
-	stdin(): string {
-		this.#stdin = ""
+	stdin(): ReadableStream {
 		this.input()
-		return this.#stdin
+
+		return this.#stdin.finish()
 	}
 	
 	abstract assertCode?(code: number): void 

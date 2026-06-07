@@ -19,10 +19,8 @@ export async function executeTest(test: Test, program: string): Promise<TestResu
 	})
 
 	const instance = command.spawn()
-	
-	const writer = instance.stdin.getWriter()
-	writer.write(new TextEncoder().encode(test.stdin()))
-	writer.close()
+
+	test.stdin().pipeTo(instance.stdin)
 
 	const { code, stdout } = await instance.output()
 
@@ -34,11 +32,9 @@ export async function executeTest(test: Test, program: string): Promise<TestResu
 	for await (const entry of walk(temp, { includeDirs: false, includeSymlinks: false })) {
 		const path = relative(temp, entry.path)
 		
-		const file = await Deno.open(entry.path, { read: true })
+		using file = await Deno.open(entry.path, { read: true })
 		
 		files.set(path, await toText(file.readable))
-
-		file.close()
 	}
 
 	return {
