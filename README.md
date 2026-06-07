@@ -8,9 +8,9 @@
 
 ## Installation
 
-Install with `npm`
+Install with ???
 ```bash
-$ npm i -g utt
+# what to run? good question...
 ```
 
 Or dont! Just download a test bundle from a repo, and a `./utt` binary will be waiting for you there (you might lose out on some cool features though...)

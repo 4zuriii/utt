@@ -1,8 +1,8 @@
 import { getSrcDir, assertDir } from "$src/utils/dirs.ts"
-import template from "$src/templates/Test.ts" with { type: "text" }
 import { ensureDir } from "@std/fs"
 import { join } from "@std/path"
 import cfg from '$src/utils/state.ts'
+import template from "$src/templates/test.js" with { type: "text" }
 
 export async function setPackageCommand(pkg: string) {
 	const path = join(await getSrcDir(), pkg)
