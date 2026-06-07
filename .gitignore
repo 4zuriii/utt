@@ -3,3 +3,4 @@ dist
 .utt
 program
 *.utest
+calc

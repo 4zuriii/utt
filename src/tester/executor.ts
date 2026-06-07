@@ -27,7 +27,7 @@ export async function executeTest(test: Test, program: string): Promise<TestResu
 	let output = new TextDecoder().decode(stdout)
 	output = test.parse?.(output) ?? output		// parse the output if a parsing function is defined
 
-	// TODO: Rework logic to handle files as ReadableStream throughout the program
+	// TODO: Rework logic to handle files as ReadableStreams throughout the program
 	const files = new Map<string, string>()
 	for await (const entry of walk(temp, { includeDirs: false, includeSymlinks: false })) {
 		const path = relative(temp, entry.path)
