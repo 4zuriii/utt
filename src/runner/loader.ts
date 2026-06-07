@@ -1,5 +1,4 @@
-import type { TestDescriptor, testTask } from "$types/tests.ts"
-import type { FullTestInterface, Metadata, TestResult } from "$public/core.ts"
+import type { FullTestInterface, Metadata, TestResult } from "utt"
 import { UntarStream } from "@std/tar/untar-stream"
 import { toJson, toText } from '@std/streams'
 import { encodeBase64Url } from '@std/encoding'
@@ -10,7 +9,6 @@ import { encodeBase64Url } from '@std/encoding'
  * @param path path to the class, relative to `.utt/tests/` directory
  */
 export async function loadTest(path: string): Promise<FullTestInterface> {
-
 	const Test = (await import(path)).default
 
 	return new Test()
@@ -53,18 +51,5 @@ export async function parseUtest(path: string) {
 	return result as {
 		test: FullTestInterface,
 		expected: TestResult
-	}
-}
-
-export async function prepareTasks(descriptors: TestDescriptor[]): Promise<testTask[]> {
-	return await Promise.all(descriptors.map(createTask))
-}
-
-async function createTask(descriptor: TestDescriptor) {
-	return {
-		pkg: descriptor.pkg,
-		group: descriptor.group,
-		name: descriptor.name,
-		obj: await loadTest(await descriptor.resolveClassPath()),
 	}
 }

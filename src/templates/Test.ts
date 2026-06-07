@@ -1,5 +1,5 @@
-// deno-lint-ignore-file
-import { FullTestInterface, TestInterface, TestResult, Test } from "$public/core.ts"
+import type { FullTestInterface, TestInterface, TestResult } from "utt"
+import { Test } from "utt"
 
 @Test
 class TestClass implements TestInterface {
@@ -11,15 +11,13 @@ class TestClass implements TestInterface {
     // Generate the input
     // see docs for helpers to create the input
     input(): void {
-        this.line("")
+        this.line("A line of standard input")
     }
 
     // optional: parse the output
-    /*
-    parse(stdout: string): string {
-        return this.hash(stdout)   
-    }    
-    */
+    // parse(stdout: string): string {
+    //     return this.hash(stdout)   
+    // }    
 
     // Verify that the test passed succesfully
     // use a helper or write the logic yourself

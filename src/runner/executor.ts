@@ -1,4 +1,4 @@
-import type { FullTestInterface, TestResult } from "$public/core.ts"
+import type { FullTestInterface, TestResult } from "utt"
 import { makeTemp } from "$src/utils/temp.ts"
 import { relative } from "@std/path"
 import { walk } from "@std/fs"

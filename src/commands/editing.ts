@@ -1,4 +1,5 @@
 import { getSrcDir, assertDir } from "$src/utils/dirs.ts"
+import template from "$src/templates/Test.ts" with { type: "text" }
 import { ensureDir } from "@std/fs"
 import { join } from "@std/path"
 import cfg from '$src/utils/state.ts'
@@ -25,7 +26,9 @@ export async function createTestCommand({ name, group }: { name: string, group?:
 
 	// Currently, this relies on the cli being run from the directory of the project
 	// TODO: decouple this
-	await Deno.copyFile("src/templates/Test.ts", join(path, name + ".ts"))
+	await Deno.writeTextFile(join(path, name + ".ts"), template, {
+		create: true
+	})
 }
 
 async function dirIsEmpty(dir: AsyncIterable<Deno.DirEntry>) {

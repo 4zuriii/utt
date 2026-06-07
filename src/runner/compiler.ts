@@ -1,4 +1,4 @@
-import type { FullTestInterface } from "$public/core.ts"
+import type { FullTestInterface } from "utt"
 import { executeTest } from "$src/runner/executor.ts"
 import { TarStream } from '@std/tar'
 import { loadTest } from "$src/runner/loader.ts"

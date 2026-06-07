@@ -23,13 +23,17 @@
 		"@types/node": "npm:@types/node@^25.9.1",
 		"yoctocolors": "npm:yoctocolors@^2.1.2"
 	},
+	"compile": {
+		"permissions": {
+			"all": true
+		}
+	},
 	"tasks": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "deno",
-		"dev": "deno --watch",
+		"build": "deno compile -P --output dist/ut src/cli.ts",
 		"install": "deno install --force --config deno.json --global --name utt --allow-all src/cli.ts"
 	},
-	"exports": "./src/cli.ts",
+	"exports": "./shared/sdk.ts",
 	"fmt": {
 		"useTabs": true,
 		"lineWidth": 100,
