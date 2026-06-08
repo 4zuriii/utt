@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-export function hash() {
+export function createHashStream(): TransformStream<Uint8Array<ArrayBuffer>> {
   const hash = createHash("sha512");
 
   return new TransformStream({

@@ -1,5 +1,5 @@
 import { resolve } from "@std/path/resolve"
-import { hash } from "node:crypto"
+import { createHashStream } from './utils/hash.ts'
 
 export type Metadata = {
 	code: number
@@ -42,7 +42,7 @@ class stdinStream {
  */
 export abstract class Test {
 	#stdin = new stdinStream()
-	#files = new Map<string, Promise<Uint8Array>>()
+	#files = new Map<string, Promise<Uint8Array<ArrayBufferLike>>>()
 
 	// ABSTRACT METHODS
 
@@ -91,7 +91,7 @@ export abstract class Test {
      * @description define transformations to apply to stdout
      * @returns {string} an array of transformers
      */
-	transform?(): TransformStream[]
+	transform?(): TransformStream<Uint8Array, Uint8Array>[]
 	
 	// HELPER UTILITIES
 
@@ -142,11 +142,10 @@ export abstract class Test {
 
 	/**
      * Hashes the output
-     * @param {string} input the data to hash
-     * @returns {string} A sha256 hash of the output
+     * @returns {void}
      */
-	hash(input: string): string {
-		return hash("sha512", input)
+	hash(): TransformStream<Uint8Array<ArrayBuffer>> {
+		return createHashStream()
 	}
 
 	// CHECKING UTILITIES
@@ -190,12 +189,12 @@ export abstract class Test {
 	/**
 	 * DO NOT USE IN YOUR TEST
 	 */
-	async __files(): Promise<Map<string, ReadableStream<any>>> {
+	async __files(): Promise<Map<string, ReadableStream<Uint8Array<ArrayBufferLike>>>> {
 		this.files?.()
 
 		await Promise.all(this.#files.values())
 
-		const res = new Map<string, ReadableStream<Uint8Array>>()
+		const res = new Map<string, ReadableStream<Uint8Array<ArrayBufferLike>>>()
 
 		this.#files.entries().forEach(async ([k, v]) => {
 			res.set(k, ReadableStream.from([await v]))
