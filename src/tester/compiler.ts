@@ -4,7 +4,7 @@ import type { Test } from "utt"
 import { executeTest } from "$src/tester/executor.ts"
 import { TarStream } from '@std/tar'
 import { loadTest } from "$src/tester/loader.ts"
-import { ensureDir } from "@std/fs"
+import { ensureDir, exists } from "@std/fs"
 import { join } from "@std/path"
 import { assertDir, getSrcDir, getTestsDir } from "$src/utils/dirs.ts"
 import cfg from "$src/utils/state.ts"
@@ -71,29 +71,29 @@ async function compileTest(src: string, dest: string, test: string, program: str
     using testFile = await Deno.open(path)
     
     // prepare the test package for writing
+    const archivePath = join(dest, test.replace(".js", ".zip"))
     await ensureDir(dest)
-    using archive = await Deno.open(join(
-        dest,
-        test.replace(".js", ".zip")
-    ), {
+    if (await exists(archivePath)) {
+        await Deno.remove(archivePath)
+    }
+    using archive = await Deno.open(archivePath, {
         create: true,
         write: true,
     })
+    await using zip = new ZipFile(archive.writable)
     
     // generate the expected answer
     const result = await executeTest(testInstance, program)
     
-    const zip = new ZipFile(archive.writable)
-    
+    // populate the archive
     await zip.addFile("test.js", testFile.readable)
     await zip.addFile("model.out", result.out)
     await zip.addFile("status.json", ReadableStream.from([JSON.stringify(await result.status)]).pipeThrough(new TextEncoderStream()))
-    testInstance.__assertCode?.((await result.status).code)     // fail compiling if a decorator exists and reports an error
     
-    console.log(testInstance.__files())
-    for (const [path, file] of await testInstance.__files()) {
+    // assert the test returns with the declared exit code
+    testInstance.__assertCode?.((await result.status).code)
+    
+    for (const [ path, file ] of await testInstance.__files()) {
         await zip.addFile("env/" + path, file)
     }
-    
-    await zip.save()
 }

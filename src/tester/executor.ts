@@ -5,7 +5,6 @@ import { makeTemp } from "$src/utils/temp.ts"
 import { relative } from "@std/path"
 import { walk } from "@std/fs"
 import { toText } from "@std/streams/to-text"
-import { createHashTransformStream } from "$src/utils/hashStream.ts"
 
 // runs a test and returns data regarding its execution
 export async function executeTest(test: Test, program: string): Promise<TestOutput> {
@@ -23,7 +22,7 @@ export async function executeTest(test: Test, program: string): Promise<TestOutp
 
 	await test.__input().pipeTo(instance.stdin)
 
-	const output = instance.stdout.pipeThrough(createHashTransformStream())
+	const output = instance.stdout //.pipeThrough(createHashTransformStream())
 
 	// let output = new TextDecoder().decode(stdout)
 	// output = test.parse?.(output) ?? output		// parse the output if a parsing function is defined

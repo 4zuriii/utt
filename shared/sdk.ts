@@ -87,12 +87,11 @@ export abstract class Test {
 	abstract check(output: TestOutput, expected: TestOutput): Promise<void>
 
 	/**
-     * @method parse
-     * @description Optionally parse stdout before saving the result 
-     * @param {string} stdout raw stdout from the program
-     * @returns {string} parsed output
+     * @method transform
+     * @description define transformations to apply to stdout
+     * @returns {string} an array of transformers
      */
-	parse?(stdout: string): string
+	transform?(): TransformStream[]
 	
 	// HELPER UTILITIES
 

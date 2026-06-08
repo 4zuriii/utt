@@ -16,7 +16,7 @@ export class ZipFile {
         await this.writer.add(path, file)
     }
 
-    async save() {
+    async [Symbol.asyncDispose](): Promise<void> {
         await this.writer.close()
         await terminateWorkers()
     }
