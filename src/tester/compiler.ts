@@ -2,15 +2,12 @@
 
 import type { Test } from "utt"
 import { executeTest } from "$src/tester/executor.ts"
-import { TarStream } from '@std/tar'
 import { loadTest } from "$src/tester/loader.ts"
 import { ensureDir, exists } from "@std/fs"
 import { join } from "@std/path"
 import { assertDir, getSrcDir, getTestsDir } from "$src/utils/dirs.ts"
 import cfg from "$src/utils/state.ts"
 import { ZipFile } from "$src/utils/zip.ts"
-import { JsonStringifyStream } from "@std/json"
-import { zipReadableStreams } from "@std/streams/zip-readable-streams"
 
 export async function compilePackage(pkg: string, program?: string) {
     program = program ?? cfg.get("cfg.program")
@@ -62,16 +59,16 @@ async function compileGroup(src: string, dest: string, program: string) {
 	}
 }
 
-async function compileTest(src: string, dest: string, test: string, program: string) {
+async function compileTest(src: string, dest: string, testName: string, program: string) {
     // path to test
-    const path = join(src, test)
+    const path = join(src, testName)
 
-    const testInstance: Test = await loadTest(path)
+    const test: Test = await loadTest(path)
     
     using testFile = await Deno.open(path)
     
     // prepare the test package for writing
-    const archivePath = join(dest, test.replace(".js", ".zip"))
+    const archivePath = join(dest, testName.replace(".js", ".zip"))
     await ensureDir(dest)
     if (await exists(archivePath)) {
         await Deno.remove(archivePath)
@@ -83,7 +80,7 @@ async function compileTest(src: string, dest: string, test: string, program: str
     await using zip = new ZipFile(archive.writable)
     
     // generate the expected answer
-    const result = await executeTest(testInstance, program)
+    const result = await executeTest(test, program)
     
     // populate the archive
     await zip.addFile("test.js", testFile.readable)
@@ -91,9 +88,9 @@ async function compileTest(src: string, dest: string, test: string, program: str
     await zip.addFile("status.json", ReadableStream.from([JSON.stringify(await result.status)]).pipeThrough(new TextEncoderStream()))
     
     // assert the test returns with the declared exit code
-    testInstance.__assertCode?.((await result.status).code)
+    test.__assertCode?.((await result.status).code)
     
-    for (const [ path, file ] of await testInstance.__files()) {
+    for (const [ path, file ] of await test.__files()) {
         await zip.addFile("env/" + path, file)
     }
 }

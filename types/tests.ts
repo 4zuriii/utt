@@ -26,6 +26,6 @@ export class TestDescriptor {
 	}
 
 	async resolveClassPath() {
-		return join(await getTestsDir(), this.#pkg, this.#group, this.#name.concat(".utest"))
+		return join(await getTestsDir(), this.#pkg, this.#group, this.#name.concat(".zip"))
 	}
 }

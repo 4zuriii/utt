@@ -1,6 +1,6 @@
 // This module is responsible for loading tests, in particular this is where Test classe sget instantiated
 
-import type { Test, Metadata, TestOutput } from "utt"
+import type { Test, TestOutput } from "utt"
 import { UntarStream } from "@std/tar/untar-stream"
 import { toJson, toText } from '@std/streams'
 import { encodeBase64Url } from '@std/encoding'
@@ -27,7 +27,7 @@ export async function parseUtest(path: string): Promise<{ test: Test; expected: 
 	} = { 
 		test: {},
 		expected: {
-			files: new Map<string, string>()
+			files: new Map<string, ReadableStream<Uint8Array<ArrayBuffer>>>()
 		}
 	}
 
@@ -41,14 +41,16 @@ export async function parseUtest(path: string): Promise<{ test: Test; expected: 
 
 			result.test = test
 		} else if (file.path == "model.out") {
-			result.expected.stdout = await toText(file.readable)
+			result.expected.out = file.readable
 		} else if (file.path == "meta.json") {
-			result.expected.meta = await toJson(file.readable) as Metadata
+			result.expected.status = toJson(file.readable) as Promise<Deno.CommandStatus>
 		} else {
 			// ?. is ugly, but tsc won't stop bitching otherwise even though it's fine
-			result.expected.files?.set(file.path, await toText(file.readable))
+			result.expected.files?.set(file.path, file.readable)
 		}
 	}
+
+	console.log(result?.test?.args?.())
 
 	return result as {
 		test: Test,

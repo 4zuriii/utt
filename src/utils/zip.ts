@@ -1,4 +1,4 @@
-import { ZipWriter, terminateWorkers } from "@zip-js/zip-js";
+import { ZipWriter } from "@zip-js/zip-js";
 
 export class ZipFile {
     private writer: ZipWriter<WritableStream<Uint8Array>>
@@ -18,7 +18,6 @@ export class ZipFile {
 
     async [Symbol.asyncDispose](): Promise<void> {
         await this.writer.close()
-        await terminateWorkers()
     }
 }
 

@@ -1,12 +1,15 @@
 # PRIORITY
 
-[] rewrite hash() to work as a pipe
-[] rewrite runner.ts to work with new .utest format (.zip)
+[x] rewrite hash() to work as a pipe
+[] rewrite test validators to use streams
+[] rewrite loader.ts/runner.ts to work with new .utest format (.zip)
 [] reporting the test status
+[] break up sdk.ts (and the base Test class) into separate objects
 
 # MISC
 
 [] clean up dependencies
+[] move test scripts back to .ts, transpiling with esbuild? or native deno?
 
 # Test execution
 
@@ -15,6 +18,7 @@
 [] Asynchronous test state reporting
 [] Performance tracking (/usr/bin/time, perf)
 [] Valgrind support
+[] rewrite runner/finder/compiler so that they can share code 
 
 # SDK
 

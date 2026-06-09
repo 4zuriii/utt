@@ -52,7 +52,7 @@ async function readGroup(pkg: string, group: string, path: string) {
 		const f = parse(file.name)
 
 		if (!file.isFile) continue
-		if (f.ext !== ".utest") continue
+		if (f.ext !== ".zip") continue
 
 		const test = new TestDescriptor(pkg, group, f.name)
 
