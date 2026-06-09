@@ -2,13 +2,13 @@
 
 ## Project guide
 
-the whole project is buiilt in Deno, therefore you need to have it installed
+the whole project is built in Deno, therefore you need to have it installed
 
 For development, use `$ deno run install` to execute an "installation" script.
 This creates a symlink in your PATH folder to the entrypoint of the program, therefore
 you can easily invoke the program by running `$ utt ...` in your terminal
 
-Deno parses ts on the fly, there is no build step. You only need to run the install command once (to be precise, after addign dependencies too)
+Deno parses Typescript on the fly, there is no build step. You only need to run the install command once (to be precise, after adding dependencies too)
 You dont need to reinstall to test changes in your code
 
 ---
