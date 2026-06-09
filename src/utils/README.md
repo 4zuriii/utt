@@ -1,0 +1,1 @@
+This folder contains miscellanous functions or any other helpers used throughout the program
