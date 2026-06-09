@@ -40,8 +40,7 @@
     "npm:esbuild@*": "0.28.0",
     "npm:log-update@8": "8.0.0",
     "npm:ora@^9.4.0": "9.4.0",
-    "npm:sucrase@*": "3.35.1",
-    "npm:yoctocolors@^2.1.2": "2.1.2"
+    "npm:sucrase@*": "3.35.1"
   },
   "jsr": {
     "@deno/cache-dir@0.8.0": {
@@ -1158,8 +1157,7 @@
       "npm:commander@15",
       "npm:conf@^15.1.0",
       "npm:log-update@8",
-      "npm:ora@^9.4.0",
-      "npm:yoctocolors@^2.1.2"
+      "npm:ora@^9.4.0"
     ]
   }
 }

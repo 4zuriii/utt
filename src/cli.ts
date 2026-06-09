@@ -11,7 +11,7 @@ import { getRootDir } from "$src/utils/dirs.ts"
 import cfg from "$src/utils/state.ts"
 import { resolve } from "@std/path/resolve"
 
-const program = new Command()
+export const program = new Command()
 
 program.name("utt")
 	.description(

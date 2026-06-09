@@ -1,6 +1,7 @@
 import Conf from "conf"
 
 import { getOrInitWorkspace } from "$src/utils/dirs.ts"
+import { UTT_CONFIG_NAME } from "$utils/constants.ts"
 
 type ConfigSchema = {
 	program: string
@@ -18,7 +19,7 @@ type Schema = {
 
 const defaults: Schema = {
 	cfg: {
-		program: "./program",
+		program: "",
 		stats: ["Real time", "Memory usage"],
 	},
 	state: {
@@ -30,7 +31,7 @@ const cfg = new Conf<Schema>({
 	projectName: "utt",
 	projectSuffix: "",
 	cwd: await getOrInitWorkspace(),
-	configName: 'utt-config',
+	configName: UTT_CONFIG_NAME,
 	defaults,
 })
 

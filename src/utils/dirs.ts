@@ -1,10 +1,11 @@
-import { dirname, join } from '@std/path'
+import { dirname, join, resolve } from '@std/path'
 import { ensureDir, exists } from '@std/fs'
+import { UTT_DIST_DIR, UTT_SRC_DIR, UTT_TESTS_DIR, UTT_WORKSPACE_DIR } from "$utils/constants.ts"
 
 async function findRoot(path: string): Promise<string> {
     if (path == '/') throw new Error("Project not found")
 
-    const res = await exists(join(path, '.utt'), { isDirectory: true })
+    const res = await exists(join(path, UTT_WORKSPACE_DIR), { isDirectory: true })
 
     if (res) {
         return path
@@ -18,7 +19,7 @@ export async function getRootDir() {
 }
 
 export async function getWorkspace(): Promise<string> {
-    return join(await getRootDir(), '.utt')
+    return join(await getRootDir(), UTT_WORKSPACE_DIR)
 }
 
 async function getDir(folder: string) {
@@ -30,15 +31,15 @@ async function getDir(folder: string) {
 }
 
 export async function getTestsDir() {
-    return await getDir('tests')
+    return await getDir(UTT_TESTS_DIR)
 }
 
 export async function getSrcDir() {
-    return await getDir('src')
+    return await getDir(UTT_SRC_DIR)
 }
 
 export async function getDistDir() {
-    return await getDir('dist')
+    return await getDir(UTT_DIST_DIR)
 }
 
 export async function getOrInitWorkspace(): Promise<string> {
@@ -47,9 +48,9 @@ export async function getOrInitWorkspace(): Promise<string> {
 
         return res
     } catch (_e) {
-        Deno.mkdirSync('.utt')
+        Deno.mkdirSync(UTT_WORKSPACE_DIR)
 
-        return join(Deno.cwd(), '.utt')
+        return resolve(UTT_WORKSPACE_DIR)
     }
 }
 

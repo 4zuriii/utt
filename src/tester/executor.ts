@@ -18,7 +18,7 @@ export async function executeTest(test: Test, program: string): Promise<TestOutp
 	const instance = command.spawn()
 
 	// give the program input
-	await test.__input().pipeTo(instance.stdin)
+	await test.__collect_input().pipeTo(instance.stdin)
 
 	// apply transforms defined in the test to the output
 	let output: ReadableStream<Uint8Array> = instance.stdout

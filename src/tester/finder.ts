@@ -5,6 +5,7 @@ import { TestDescriptor } from "$types/tests.ts"
 import { getTestsDir } from "$src/utils/dirs.ts"
 import { join } from "@std/path/join"
 import { parse } from "@std/path/parse"
+import { UTEST_EXT } from "$utils/constants.ts"
 
 export async function readAll() {
 	const path = await getTestsDir()
@@ -52,7 +53,7 @@ async function readGroup(pkg: string, group: string, path: string) {
 		const f = parse(file.name)
 
 		if (!file.isFile) continue
-		if (f.ext !== ".zip") continue
+		if (f.ext !== UTEST_EXT) continue
 
 		const test = new TestDescriptor(pkg, group, f.name)
 

@@ -7,6 +7,7 @@
 		"$src/": "./src/",
 		"$public/": "./public/",
 		"$shared/": "./shared/",
+		"$utils/": "./src/utils/",
 		"@deno/emit": "jsr:@deno/emit@^0.46.0",
 		"@inquirer/prompts": "npm:@inquirer/prompts@^8.5.2",
 		"@std/crypto": "jsr:@std/crypto@^1.1.0",
@@ -25,7 +26,6 @@
 		"log-update": "npm:log-update@^8.0.0",
 		"ora": "npm:ora@^9.4.0",
 		"@types/node": "npm:@types/node@^25.9.1",
-		"yoctocolors": "npm:yoctocolors@^2.1.2",
 		"utt": "./shared/sdk.ts"
 	},
 	"compile": {

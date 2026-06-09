@@ -1,4 +1,5 @@
 import { ZipWriter } from "@zip-js/zip-js";
+import { UTEST_FILES_DIR } from "$utils/constants.ts";
 
 export class ZipFile {
     private writer: ZipWriter<WritableStream<Uint8Array>>
@@ -6,8 +7,8 @@ export class ZipFile {
     constructor(writable: WritableStream) {
         this.writer = new ZipWriter(writable)
 
-        // ensure the env/ directory exists inside the zip file
-        this.writer.add("env/", undefined, {
+        // ensure the directory exists inside the zip file, since it wont if not files are written
+        this.writer.add(UTEST_FILES_DIR, undefined, {
             directory: true
         })
     }

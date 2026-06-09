@@ -3,6 +3,7 @@ import { ensureDir } from "@std/fs"
 import { join } from "@std/path"
 import cfg from '$src/utils/state.ts'
 import template from "$src/templates/test.js" with { type: "text" }
+import { bold, brightGreen, brightRed } from "@std/fmt/colors"
 
 export async function setPackageCommand(pkg: string) {
 	const path = join(await getSrcDir(), pkg)
@@ -13,14 +14,18 @@ export async function setPackageCommand(pkg: string) {
 }
 
 export async function createTestCommand({ name, group }: { name: string, group?: string }) {
+	const pkg = cfg.get("state.editingPackage")
+
 	let path = join(
 		await getSrcDir(),
-		cfg.get("state.editingPackage")
+		pkg
 	)
 
 	await assertDir(path)
 
 	if (group) path = join(path, group)
+
+	const fullName = group ? group + "." + name : name
 
 	await ensureDir(path)
 
@@ -29,6 +34,8 @@ export async function createTestCommand({ name, group }: { name: string, group?:
 	await Deno.writeTextFile(join(path, name + ".js"), template, {
 		create: true
 	})
+
+	console.log(brightGreen(`Created test ${bold(fullName)} in package ${bold(pkg)}`))
 }
 
 async function dirIsEmpty(dir: AsyncIterable<Deno.DirEntry>) {
@@ -40,23 +47,28 @@ async function dirIsEmpty(dir: AsyncIterable<Deno.DirEntry>) {
 }
 
 export async function deleteTestCommand({ name, group }: { name: string, group?: string }) {
+	const pkg = cfg.get("state.editingPackage")
+	
 	let path = join(
 		await getSrcDir(),
-		cfg.get("state.editingPackage")
+		pkg
 	)
 
 	await assertDir(path)
 
 	if (group) path = join(path, group)
 
+	const fullName = group ? group + "." + name : name
+
 	try {
-		await Deno.remove(join(path, name.concat(".ts")))
+		await Deno.remove(join(path, name.concat(".js")))
 
 		if (group && await dirIsEmpty(Deno.readDir(path))) {
 			Deno.remove(path)
 		}
+		console.log(brightGreen(`Deleted test ${bold(fullName)} in package ${bold(pkg)}`))
 	} catch (_) {
-		console.log(`Test '${group ? group + "." : ''}${name}' doesn't exist`)
+		console.log(brightRed(`Test ${bold(fullName)} doesn't exist in package ${bold(pkg)}`))
 	} 
 }
 
