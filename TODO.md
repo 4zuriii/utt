@@ -1,10 +1,11 @@
 # PRIORITY
 
 [x] rewrite hash() to work as a pipe
-[] rewrite test validators to use streams
-[] rewrite loader.ts/runner.ts to work with new .utest format (.zip)
-[] reporting the test status
-[] break up sdk.ts (and the base Test class) into separate objects
+[x] rewrite test validators to use streams
+[x] rewrite loader.ts/runner.ts to work with new .utest format (.zip)
+[x] reporting the test status
+[] advanced test status reporting
+[] break up sdk.ts (and the base Test class) into separate objects - halfway, files mixin is left
 
 # MISC
 
@@ -25,4 +26,4 @@
 [x] hash() function (parsing)
 [x] line()
 [] define() for creating objects
-[] rewrite parse (and other parts of the compiler/runner) to use streams
+[x] rewrite parse (and other parts of the compiler/runner) to use streams

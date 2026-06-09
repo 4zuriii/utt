@@ -92,7 +92,6 @@ export abstract class BaseTest {
 	hash(): TransformStream<Uint8Array<ArrayBuffer>> {
 		return createHashStream()
 	}
-
 	
 	/**
 	 * DO NOT USE IN YOUR TEST

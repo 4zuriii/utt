@@ -50,9 +50,7 @@ export async function runTests(descriptors: TestDescriptor[], program: string) {
         }
     }
 
-    for (const test of descriptors) {
-        const temp = await makeTemp()
-    
+    for (const test of descriptors) {    
         try {
             const path = await test.resolveClassPath()
 
@@ -72,8 +70,9 @@ export async function runTests(descriptors: TestDescriptor[], program: string) {
                 console.log(brightRed(`[FAIL] Test ${bold(fullName)} failed`))
                 console.log(brightRed(`Fail reason: ${report.error}`))
             }
-        } finally {
-            Deno.remove(temp)
+        } catch (e) {
+            console.log(brightRed(`[FAIL] An error occured while running this test `))
+            console.log(brightRed(`Error message: ${e}`))
         }
         
     }

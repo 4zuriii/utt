@@ -89,7 +89,7 @@ async function programPage(): Promise<Page> {
 		required: true,
 		prefill: "editable",
 		validate: async (path) => {
-			return await exists(resolve(path)) ? true : "The program doesn't exist" 
+			return await exists(resolve(path)) ? true : "This program doesn't exist" 
 		}
 	}, {
 		clearPromptOnDone: true,
