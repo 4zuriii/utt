@@ -8,7 +8,8 @@ import { join } from "@std/path"
 import { assertDir, getSrcDir, getTestsDir } from "$src/utils/dirs.ts"
 import cfg from "$src/utils/state.ts"
 import { ZipFile } from "$src/utils/zip.ts"
-import { brightYellow, yellow } from "@std/fmt/colors"
+import { brightYellow } from "@std/fmt/colors"
+import { UTEST_EXT, UTEST_MODEL_OUT_FNAME, UTEST_STATUS_FNAME, UTEST_TEST_EXT, UTEST_TEST_FNAME } from "$utils/constants.ts"
 
 export async function compilePackage(pkg: string, program?: string) {
     program = program ?? cfg.get("cfg.program")
@@ -49,7 +50,7 @@ async function compileGroup(src: string, dest: string, program: string) {
 	const tests = Deno.readDir(src)
 
 	for await (const test of tests) {
-		if (!test.isFile || !test.name.endsWith('.js')) continue
+		if (!test.isFile || !test.name.endsWith(UTEST_TEST_EXT)) continue
 
         await compileTest(
             src,
@@ -69,7 +70,7 @@ async function compileTest(src: string, dest: string, testName: string, program:
     using testFile = await Deno.open(path)
     
     // prepare the test package for writing
-    const archivePath = join(dest, testName.replace(".js", ".zip"))
+    const archivePath = join(dest, testName.replace(UTEST_TEST_EXT, UTEST_EXT))
     await ensureDir(dest)
     if (await exists(archivePath)) {
         await Deno.remove(archivePath)
@@ -84,9 +85,9 @@ async function compileTest(src: string, dest: string, testName: string, program:
     const result = await executeTest(test, program)
     
     // populate the archive
-    await zip.addFile("test.js", testFile.readable, "meta")
-    await zip.addFile("model.out", result.out, "meta")
-    await zip.addFile("status.json", ReadableStream.from([JSON.stringify(await result.status)]).pipeThrough(new TextEncoderStream()), "meta")
+    await zip.addFile(UTEST_TEST_FNAME, testFile.readable, "meta")
+    await zip.addFile(UTEST_MODEL_OUT_FNAME, result.out, "meta")
+    await zip.addFile(UTEST_STATUS_FNAME, ReadableStream.from([JSON.stringify(await result.status)]).pipeThrough(new TextEncoderStream()), "meta")
     for (const [ path, file ] of result.files) {
         await zip.addFile(path, file)
     }
