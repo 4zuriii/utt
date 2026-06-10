@@ -8,7 +8,7 @@ import { configCommand } from "$src/commands/config.ts"
 import { compileCommand } from "$src/commands/compile.ts"
 import { join } from "@std/path/join"
 import { getRootDir } from "$src/utils/dirs.ts"
-import cfg from "$src/utils/state.ts"
+import cfg from "$utils/state.ts"
 import { resolve } from "@std/path/resolve"
 import { bold, red } from "@std/fmt/colors"
 
