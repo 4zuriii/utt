@@ -7,6 +7,7 @@
 [] zip files need to contain both the state before and after the test 
 [] advanced test status reporting
 [] break up sdk.ts (and the base Test class) into separate objects
+[] the input stream needs to be dynamic, not load the entire stdin into memory
 
 # PROGRAM
 
