@@ -4,7 +4,7 @@
 - [x] rewrite test validators to use streams
 - [x] rewrite loader.ts/runner.ts to work with new .utest format (.zip)
 - [x] reporting the test status
-- [ ] zip files need to contain both the state before and after the test 
+- [ ] zip files need to contain both the state before and after the test, input files need to beard properly in the test running phase 
 - [ ] advanced test status reporting
 - [x] break up sdk.ts (and the base Test class) into separate objects
 - [ ] the input stream needs to be dynamic, not load the entire stdin into memory
@@ -16,6 +16,7 @@
 - [ ] move test scripts back to .ts, transpiling with esbuild? or native deno?
 - [ ] smaller executable (somehow)
 - [ ] 'unpack' command to extract test file from a zip
+- [ ] import the test file from a zip file using Blob objects / URL.createObject / URL.revokeObjectURL
 
 # Test execution
 
