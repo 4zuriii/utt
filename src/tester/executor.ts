@@ -1,4 +1,4 @@
-// This module is responsible for the actual running of the tested program
+// This module is responsible for running the program
 
 import type { Test, TestOutput } from "utt"
 import { makeTemp } from "$utils/temp.ts"
@@ -10,8 +10,9 @@ export async function executeTest(test: Test, program: string): Promise<TestOutp
 	// prepare the task
 	const workingDir = await makeTemp()
 
+	// has to be outside of here, as compiling and running need to source files differently
 	// add files declared by the user
-	for (const [ file, content ] of await test.__files()) {
+	for (const [ file, content ] of await test.__collect_files()) {
 		await Deno.writeFile(
 			join(workingDir, file),
 			content

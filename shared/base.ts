@@ -1,4 +1,3 @@
-import { resolve } from "@std/path/resolve"
 import { createHashStream } from '$shared/mixins/transform.ts'
 import type { TestOutput } from "utt"
 
@@ -8,8 +7,6 @@ import type { TestOutput } from "utt"
  * @description A baseline class for defining tests
  */
 export abstract class BaseTest {
-	#files = new Map<string, Promise<Uint8Array<ArrayBufferLike>>>()
-
 	// ABSTRACT METHODS
 
 	/** 
@@ -60,29 +57,6 @@ export abstract class BaseTest {
 	transform?(): TransformStream<Uint8Array, Uint8Array>[]
 	
 	// HELPER UTILITIES
-
-	// FILES UTILITIES
-
-	/**
-	 * Copies a file from your drive to the test file
-	 * @param testPath the path by which your program will access the file
-	 * @param realPath the real path to the file
-	 */
-	importFile(testPath: string, realPath: string): void {
-		const filePromise = Deno.readFile(resolve(realPath))
-
-		this.#files.set(testPath, filePromise)
-	}
-
-	/**
-	 * Copies a file from your drive to the test file
-	 * @param testPath the path by which your program will access the file
-	 * @param realPath the real path to the file
-	 */
-	textFile(testPath: string, content: string): void {
-		this.#files.set(testPath, Promise.resolve(Buffer.from(content)))
-	}
-
 	// PARSING UTILITIES
 
 	/**
@@ -91,23 +65,6 @@ export abstract class BaseTest {
      */
 	hash(): TransformStream<Uint8Array<ArrayBuffer>> {
 		return createHashStream()
-	}
-	
-	/**
-	 * DO NOT USE IN YOUR TEST
-	 */
-	async __files(): Promise<Map<string, ReadableStream<Uint8Array<ArrayBufferLike>>>> {
-		this.files?.()
-
-		await Promise.all(this.#files.values())
-
-		const res = new Map<string, ReadableStream<Uint8Array<ArrayBufferLike>>>()
-
-		this.#files.entries().forEach(async ([k, v]) => {
-			res.set(k, ReadableStream.from([await v]))
-		})
-
-		return res
 	}
 	
 	/**

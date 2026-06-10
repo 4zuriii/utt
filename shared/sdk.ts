@@ -1,6 +1,7 @@
+import { BaseTest } from "$shared/base.ts"
 import { useInput } from "$shared/mixins/input.ts"
 import { useChecks } from "$shared/mixins/checks.ts"
-import { BaseTest } from "$shared/base.ts"
+import { useFiles } from "$shared/mixins/files.ts"
 
 export type Metadata = {
 	code: number
@@ -13,11 +14,12 @@ export type TestOutput = {
 		files: Map<string, ReadableStream<Uint8Array>>
 }
 
-const composition = useChecks(useInput(BaseTest))
+// Regular Test Base class
+const regularTest = useFiles(useChecks(useInput(BaseTest)))
 
-export interface Test extends InstanceType<typeof composition> {}
+export interface Test extends InstanceType<typeof regularTest> {}
 
-export const Test: abstract new (...args: ConstructorParameters<typeof BaseTest>) => Test = composition;
+export const Test: abstract new (...args: ConstructorParameters<typeof BaseTest>) => Test = regularTest;
 
 // Test class decorators
 // These are useful for asserting that the generated tests make sense, therefore if compiling a test 
