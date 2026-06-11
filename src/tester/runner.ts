@@ -1,7 +1,6 @@
 // This module is repsonsible for running the tests
 
 import type { TestDescriptor } from "$utils/types.ts"
-import { makeTemp } from "$src/utils/temp.ts"
 import { parseUtest } from "$src/tester/loader.ts"
 import { executeTest } from "$src/tester/executor.ts"
 import type { Test, TestOutput } from "utt"

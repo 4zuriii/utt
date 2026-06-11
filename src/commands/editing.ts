@@ -1,7 +1,7 @@
-import { getSrcDir, assertDir } from "$src/utils/dirs.ts"
+import { getSrcDir, assertDir } from "$utils/dirs.ts"
 import { ensureDir } from "@std/fs"
 import { join } from "@std/path"
-import cfg from '$src/utils/state.ts'
+import cfg from "$utils/state.ts"
 import template from "$src/templates/test.js" with { type: "text" }
 import { bold, brightGreen, brightRed } from "@std/fmt/colors"
 
