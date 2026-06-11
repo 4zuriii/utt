@@ -8,7 +8,7 @@
 - [ ] advanced test status reporting
 - [x] break up sdk.ts (and the base Test class) into separate objects
 - [ ] the input stream needs to be dynamic, not load the entire stdin into memory
-- [ ] hide test orchestration methods from the test writer by using Symbol
+- [x] hide test orchestration methods from the test writer by using Symbol
 
 # PROGRAM
 

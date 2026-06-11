@@ -1,12 +1,13 @@
 import { createHashStream } from '$shared/mixins/transform.ts'
 import type { TestOutput } from "utt"
-
+export const x = Symbol("x")
 /**
  * @abstract
  * @class Test
  * @description A baseline class for defining tests
  */
 export abstract class BaseTest {
+	// abstract [x](): any
 	// ABSTRACT METHODS
 
 	/** 

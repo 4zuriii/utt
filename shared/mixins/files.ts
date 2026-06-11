@@ -1,6 +1,8 @@
 import type { BaseTest } from "$shared/base.ts"
 import { resolve } from "@std/path"
 
+export const collectFiles = Symbol("collectFiles")
+
 type Constructor<T = object> = abstract new (...args: any[]) => T;
 
 export const useFiles = function<T extends Constructor<BaseTest>>(Base: T) {
@@ -30,7 +32,7 @@ export const useFiles = function<T extends Constructor<BaseTest>>(Base: T) {
         /**
          * DO NOT USE IN YOUR TEST
          */
-        async __collect_files(): Promise<Map<string, ReadableStream<Uint8Array<ArrayBufferLike>>>> {
+        async [collectFiles](): Promise<Map<string, ReadableStream<Uint8Array<ArrayBufferLike>>>> {
             this.#files = new Map()
 
             this.files?.()

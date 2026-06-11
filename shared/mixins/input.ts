@@ -1,5 +1,7 @@
 import type { BaseTest } from "$shared/base.ts"
 
+export const collectInput = Symbol("collectInput")
+
 type Constructor<T = object> = abstract new (...args: any[]) => T;
 
 class stdinStream {
@@ -38,7 +40,7 @@ export const useInput = function<T extends Constructor<BaseTest>>(Base: T) {
             this.#stdin.push("\n")
         }
 
-        __collect_input(): ReadableStream<Uint8Array<ArrayBuffer>> {
+        [collectInput](): ReadableStream<Uint8Array<ArrayBuffer>> {
             this.#stdin = new stdinStream()
 
             this.input()

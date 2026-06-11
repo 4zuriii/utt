@@ -2,6 +2,14 @@ import { join } from "@std/path/join"
 import { getTestsDir } from "$utils/dirs.ts"
 import { basename } from "@std/path/basename"
 
+// Symbols
+import { collectInput } from "$shared/mixins/input.ts"
+import { collectFiles } from "$shared/mixins/files.ts"
+export const TestExecutionSymbols = {
+	collectFiles: collectFiles,
+	collectInput: collectInput
+} as const
+
 export class TestDescriptor {
 	#name: string
 	#pkg: string

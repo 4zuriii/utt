@@ -4,6 +4,7 @@ import type { Test, TestOutput } from "utt"
 import { makeTemp } from "$utils/temp.ts"
 import { join } from "@std/path"
 import { walk } from "@std/fs"
+import { TestExecutionSymbols } from "$utils/types.ts"
 
 // runs a test and returns data regarding its execution
 export async function executeTest(test: Test, program: string): Promise<TestOutput> {
@@ -12,7 +13,7 @@ export async function executeTest(test: Test, program: string): Promise<TestOutp
 
 	// has to be outside of here, as compiling and running need to source files differently
 	// add files declared by the user
-	for (const [ file, content ] of await test.__collect_files()) {
+	for (const [ file, content ] of await test[TestExecutionSymbols.collectFiles]()) {
 		await Deno.writeFile(
 			join(workingDir, file),
 			content
@@ -29,7 +30,7 @@ export async function executeTest(test: Test, program: string): Promise<TestOutp
 	const instance = command.spawn()
 
 	// give the program input
-	await test.__collect_input().pipeTo(instance.stdin)
+	await test[TestExecutionSymbols.collectInput]().pipeTo(instance.stdin)
 
 	// apply transforms defined in the test to the output
 	let output: ReadableStream<Uint8Array> = instance.stdout
