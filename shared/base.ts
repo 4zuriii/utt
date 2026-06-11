@@ -7,9 +7,6 @@ export const x = Symbol("x")
  * @description A baseline class for defining tests
  */
 export abstract class BaseTest {
-	// abstract [x](): any
-	// ABSTRACT METHODS
-
 	/** 
 	 * command-line arguments to the testing program
 	 * 
@@ -17,7 +14,7 @@ export abstract class BaseTest {
      * @method args
      * @returns {string[]} command-line arguments in an array
      */
-	abstract args(): string[]
+	args?(): string[]
 
 	/** 
 	 * standard input to the testing program
@@ -27,7 +24,7 @@ export abstract class BaseTest {
      * @method input
      * @returns {void}
      */
-	abstract input(): void
+	input?(): void
 
 	/**
 	 * Include files into the test
@@ -67,10 +64,4 @@ export abstract class BaseTest {
 	hash(): TransformStream<Uint8Array<ArrayBuffer>> {
 		return createHashStream()
 	}
-	
-	/**
-	 * DO NOT USE IN YOUR TEST
-	 * @param code 
-	 */
-	__assertCode?(code: number): void 
 }

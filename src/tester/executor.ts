@@ -23,7 +23,7 @@ export async function executeTest(test: Test, program: string): Promise<TestOutp
 	const command = new Deno.Command(program, {
 		stdin: "piped",
 		stdout: "piped",
-		args: test.args(),
+		args: test.args?.(),
 		cwd: workingDir
 	})
 

@@ -43,7 +43,7 @@ export const useInput = function<T extends Constructor<BaseTest>>(Base: T) {
         [collectInput](): ReadableStream<Uint8Array<ArrayBuffer>> {
             this.#stdin = new stdinStream()
 
-            this.input()
+            this.input?.()
 
             return this.#stdin.flush()
         } 
