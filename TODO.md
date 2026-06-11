@@ -1,13 +1,13 @@
 # PRIORITY
 
+- [ ] zip files need to contain both the state before and after the test, input files need to beard properly in the test running phase 
+- [ ] advanced test status reporting
+- [ ] the input stream needs to be dynamic, not load the entire stdin into memory
 - [x] rewrite hash() to work as a pipe
 - [x] rewrite test validators to use streams
 - [x] rewrite loader.ts/runner.ts to work with new .utest format (.zip)
 - [x] reporting the test status
-- [ ] zip files need to contain both the state before and after the test, input files need to beard properly in the test running phase 
-- [ ] advanced test status reporting
 - [x] break up sdk.ts (and the base Test class) into separate objects
-- [ ] the input stream needs to be dynamic, not load the entire stdin into memory
 - [x] hide test orchestration methods from the test writer by using Symbol
 
 # PROGRAM
@@ -32,13 +32,13 @@
 
 # SDK
 
-- [x] hash() function (parsing)
-- [x] line()
 - [ ] define() for creating objects
-- [x] rewrite parse (and other parts of the compiler/runner) to use streams
 - [ ] Multi tests
 - [ ] add a random number generator (the seed should probably be static, maybe file creation date? or some other file attribute)
 - [ ] declaring timeout, valgrind, special input/output (/dev/full, /dev/random etc.) and other*
+- [x] hash() function (parsing)
+- [x] line()
+- [x] rewrite parse (and other parts of the compiler/runner) to use streams
 
 # NOTES
 
