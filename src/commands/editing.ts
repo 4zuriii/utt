@@ -4,6 +4,7 @@ import { join } from "@std/path"
 import cfg from "$utils/state.ts"
 import template from "$src/templates/test.js" with { type: "text" }
 import { bold, brightGreen, brightRed } from "@std/fmt/colors"
+import { app } from "$src/cli.ts"
 
 export async function setPackageCommand(pkg: string) {
 	const path = join(await getSrcDir(), pkg)
@@ -33,6 +34,8 @@ export async function createTestCommand({ name, group }: { name: string, group?:
 	// TODO: decouple this
 	await Deno.writeTextFile(join(path, name + ".js"), template, {
 		create: true
+	}).catch((e: Error) => {
+		app.error(`Failed to create test ${fullName}: ${e.message}`)
 	})
 
 	console.log(brightGreen(`Created test ${bold(fullName)} in package ${bold(pkg)}`))

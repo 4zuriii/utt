@@ -12,9 +12,9 @@ import cfg from "$utils/state.ts"
 import { resolve } from "@std/path/resolve"
 import { bold, red } from "@std/fmt/colors"
 
-export const program = new Command()
+export const app = new Command()
 
-program.name("utt")
+app.name("utt")
 	.description(
 		"Universal Testing Tool - easily write and run tests for any program",
 	)
@@ -46,7 +46,7 @@ const programOption = new Option("--program, -p <path>", "Specify the path to th
 	)
 	.argParser(path => resolve(path))
 
-program.command("test")
+app.command("test")
 	.description("Runs tests")
 	.argument(
 		"[package]",
@@ -59,13 +59,13 @@ program.command("test")
 	
 // CONFIG COMMAND
 
-program.command("config")
+app.command("config")
 	.description("Configure utt for this project")
 	.action(configCommand)
 
 // PACKAGE COMMAND
 
-program.command("package")
+app.command("package")
 	.description("Select package to work on")
 	.argument("<package>")
 	.action(setPackageCommand)
@@ -94,21 +94,21 @@ function nameParser(str: string) {
 	}
 }
 
-program.command("create")
+app.command("create")
 	.description("Creates a test in the currently edited package")
 	.addArgument(testNameArgument)
 	.action(createTestCommand)
 
 // DELETE COMMAND
 
-program.command("delete")
+app.command("delete")
 	.description("Delete a test in the currently edited package")
 	.addArgument(testNameArgument)
 	.action(deleteTestCommand)
 
 // COMPILE COMMAND
 
-program.command("compile")
+app.command("compile")
 	.description("Compile a package into .utest files")
 	.argument("[package]")
 	.addOption(programOption)
@@ -122,4 +122,4 @@ program.command("peek")
 	.action(peekCommand)
 */
 
-program.parse()
+app.parse()

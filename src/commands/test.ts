@@ -2,6 +2,7 @@ import { readPackage, readAll } from "$src/tester/finder.ts"
 import type { TestDescriptor } from "$utils/types.ts"
 import { runTests } from "$src/tester/runner.ts"
 import { terminateWorkers } from "@zip-js/zip-js"
+import { app } from "$src/cli.ts"
 
 type OptionsObject = {
 	program: string
@@ -33,7 +34,9 @@ export async function testCommand(pkg: string, options: OptionsObject) {
 		descriptors = await readAll()
 	}
 
-	await runTests(descriptors, program)
+	await runTests(descriptors, program).catch((e: Error) => {
+		app.error(`An error occured while running tests: ${e.message}`)
+	})
 
 	await terminateWorkers()
 }
