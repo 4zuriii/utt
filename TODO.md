@@ -2,7 +2,7 @@
 
 - [ ] zip files need to contain both the state before and after the test, input files need to beard properly in the test running phase 
 - [ ] advanced test status reporting
-- [ ] the input stream needs to be dynamic, not load the entire stdin into memory
+- [ ] Advanced input() <2>
 - [x] rewrite hash() to work as a pipe
 - [x] rewrite test validators to use streams
 - [x] rewrite loader.ts/runner.ts to work with new .utest format (.zip)
@@ -35,14 +35,15 @@
 - [ ] define() for creating objects
 - [ ] Multi tests
 - [ ] add a random number generator (the seed should probably be static, maybe file creation date? or some other file attribute)
-- [ ] declaring timeout, valgrind, special input/output (/dev/full, /dev/random etc.) and other*
+- [ ] declaring timeout, valgrind, special input/output (/dev/full, /dev/random etc.) and other <1>
 - [x] hash() function (parsing)
 - [x] line()
 - [x] rewrite parse (and other parts of the compiler/runner) to use streams
 
 # NOTES
 
-- * - should this even be in the sdk? maybe as validation methods? or a whole new field? also, has to be able to be disabled/override by the user with flags
+- <1> - should this even be in the sdk? maybe as validation methods? or a whole new field? also, has to be able to be disabled/override by the user with flags
+- <2> - input() can either be a regular function like with the current API, or it could be a generator function. The current approach works fine on for small input, but generator functions can feed the program input on demand, which is better for memory efficiency, as we avoid an unneccesary copy. In BaseTest class the return value of input() should be: T | Iterable\<T\>
 - breaking up files into a mixin is left for {break up sdk.ts}
 - by multi tests i mean a test that generates n (i. e. 100) instances of itself with randomized values, so esentially generators
 - define(): in general, methods that make it easier to create input. For example, if the program requires us to create objects before they can

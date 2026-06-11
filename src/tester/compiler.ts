@@ -3,13 +3,14 @@
 import type { Test } from "utt"
 import { executeTest } from "$src/tester/executor.ts"
 import { loadTest } from "$src/tester/loader.ts"
-import { ensureDir, exists } from "@std/fs"
+import { ensureDir, exists, walk } from "@std/fs"
 import { join } from "@std/path"
 import { assertDir, getSrcDir, getTestsDir } from "$src/utils/dirs.ts"
-import cfg from "$src/utils/state.ts"
-import { ZipFile } from "$src/utils/zip.ts"
-import { brightYellow } from "@std/fmt/colors"
+import cfg from "$utils/state.ts"
+import { ZipFile } from "$utils/zip.ts"
 import { UTEST_EXT, UTEST_MODEL_OUT_FNAME, UTEST_STATUS_FNAME, UTEST_TEST_EXT, UTEST_TEST_FNAME } from "$utils/constants.ts"
+import { makeTemp } from "$utils/temp.ts"
+import { TestExecutionSymbols } from "$utils/types.ts"
 
 export async function compilePackage(pkg: string, program?: string) {
     program = program ?? cfg.get("cfg.program")
@@ -80,23 +81,44 @@ async function compileTest(src: string, dest: string, testName: string, program:
         write: true,
     })
     await using zip = new ZipFile(archive.writable)
+
+    const env = await prepareTest(test, zip)
     
     // generate the expected answer
-    const result = await executeTest(test, program)
+    const result = await executeTest(test, program, env)
     
     // populate the archive
-    await zip.addFile(UTEST_TEST_FNAME, testFile.readable, "meta")
-    await zip.addFile(UTEST_MODEL_OUT_FNAME, result.out, "meta")
-    await zip.addFile(UTEST_STATUS_FNAME, ReadableStream.from([JSON.stringify(await result.status)]).pipeThrough(new TextEncoderStream()), "meta")
-    for (const [ path, file ] of result.files) {
-        await zip.addFile(path, file)
+    await zip.addFile(UTEST_TEST_FNAME, testFile.readable)
+    await zip.addFile(UTEST_MODEL_OUT_FNAME, result.out)
+    await zip.addFile(UTEST_STATUS_FNAME, ReadableStream.from([JSON.stringify(await result.status)]).pipeThrough(new TextEncoderStream()))
+    for await (const entry of walk(env, { includeDirs: false, includeSymlinks: false })) {
+        const file = await Deno.open(entry.path) // the file should not be closed, reading the stream will do it
+        await zip.addFile(entry.name, file.readable, "out")
     }
 
+    // await Deno.remove(env, { recursive: true })
+
     // assert the test returns with the declared exit code
-    try {
+    /*try {
         test.__assertCode?.((await result.status).code)
     } catch (e) {
         console.log(brightYellow(e as string))
         await Deno.remove(archivePath)
+    }*/
+}
+
+// creates a temporary directory as the test environment, 
+// saves and prepares input files
+async function prepareTest(test: Test, zip: ZipFile): Promise<string> {
+	const env = await makeTemp() 
+
+    const files = await test[TestExecutionSymbols.collectFiles]()
+
+    for (const [path, file] of files) {
+        const [stream1, stream2] = file.tee(); // copy the stream
+        await Deno.writeFile(join(env, path), stream1)
+        await zip.addFile(path, stream2, "in")
     }
+
+    return env
 }

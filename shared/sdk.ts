@@ -11,7 +11,6 @@ export type TestOutput = {
 		out: ReadableStream<Uint8Array>,
 		status: Deno.ChildProcess["status"],
 		stats: {},
-		files: Map<string, ReadableStream<Uint8Array>>
 }
 
 // Regular Test Base class

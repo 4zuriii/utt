@@ -21,7 +21,7 @@ export async function compileCommand(pkg: string, options: { program: string }) 
     }
     
     await compilePackage(pkg, options.program).catch((e: Error) => {
-        app.error(`Failed to compile package ${pkg}: ${e.message}`)
+        app.error(`Failed to compile package ${pkg}: ${e.stack}`)
     })
 
     console.log(brightGreen(`[SUCCESS] Compiled package: ${bold(pkg)}`))
