@@ -1,10 +1,10 @@
 // This module is repsonsible for running the tests
 
-import type { TestDescriptor } from "$utils/types.ts"
+import { TestExecutionSymbols, type TestDescriptor } from "$utils/types.ts"
 import { executeTest } from "$src/tester/executor.ts"
 import type { Test, TestOutput } from "utt"
 import { bold, brightGreen, brightRed, rgb24 } from "@std/fmt/colors"
-import { makeTemp } from "$utils/temp.ts"
+import { deleteEnv, discardFiles, makeEnv } from "$utils/env.ts"
 import { ZipReaderStream } from "@zip-js/zip-js"
 import { join } from "@std/path/join"
 import { UTEST_MODEL_OUT_FNAME, UTEST_STATUS_FNAME, UTEST_TEST_FNAME } from "$utils/constants.ts"
@@ -62,7 +62,9 @@ export async function runTests(descriptors: TestDescriptor[], program: string) {
     }
 
     for (const test of descriptors) {    
-        const env = await makeTemp()
+        const fullName = test.group ? test.group + "." + test.name : test.name
+
+        const env = await makeEnv()
         
         try {
             const path = await test.resolveClassPath()
@@ -71,7 +73,7 @@ export async function runTests(descriptors: TestDescriptor[], program: string) {
 
             const output = await executeTest(parsed.test, program, env)
 
-            const fullName = test.group ? test.group + "." + test.name : test.name
+            await discardFiles(parsed.test, env)
 
             console.log(orange(`Running test: ${bold(fullName)}...`))
 
@@ -87,7 +89,7 @@ export async function runTests(descriptors: TestDescriptor[], program: string) {
             console.log(brightRed(`[FAIL] An error occured while running this test `))
             console.log(brightRed(`Error message: ${e}`))
         } finally {
-            await Deno.remove(env, { recursive: true })
+            await deleteEnv(env)
         }
         
     }
@@ -110,7 +112,7 @@ async function parseUtest(path: string, env: string): Promise<UTest> {
 
 		if (file.filename.startsWith("in/")) {
             // input for the test, move it to the environment
-            const path = file.filename.slice(3) // remove the prefix
+            const path = file.filename.slice(3)     // remove the "in/" from the path of the file
             await Deno.writeFile(join(env, path), file.readable)
         } else if (file.filename.startsWith("out/")) {
             const path = file.filename.slice(4)
@@ -127,6 +129,12 @@ async function parseUtest(path: string, env: string): Promise<UTest> {
             result.expected.status = await toJson(file.readable) as Promise<Deno.CommandStatus>
         }
 	}
+
+    const files = result.test![TestExecutionSymbols.collectFiles]()
+
+    for (const file of files.dynamicFiles) {
+        await Deno.writeFile(join(env, file.testPath), file.readable)
+    }
 
 	return result as UTest
 }

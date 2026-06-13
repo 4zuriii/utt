@@ -4,10 +4,11 @@ import { basename } from "@std/path/basename"
 
 // Symbols
 import { collectInput } from "$shared/mixins/input.ts"
-import { collectFiles } from "$shared/mixins/files.ts"
+import { collectFiles, toDiscard } from "$shared/mixins/files.ts"
 export const TestExecutionSymbols = {
-	collectFiles: collectFiles,
-	collectInput: collectInput
+	collectFiles,
+	toDiscard,
+	collectInput
 } as const
 
 export class TestDescriptor {

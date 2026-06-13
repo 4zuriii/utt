@@ -9,7 +9,7 @@ import { assertDir, getSrcDir, getTestsDir } from "$src/utils/dirs.ts"
 import cfg from "$utils/state.ts"
 import { ZipFile } from "$utils/zip.ts"
 import { UTEST_EXT, UTEST_MODEL_OUT_FNAME, UTEST_STATUS_FNAME, UTEST_TEST_EXT, UTEST_TEST_FNAME } from "$utils/constants.ts"
-import { makeTemp } from "$utils/temp.ts"
+import { makeEnv, discardFiles, deleteEnv } from "$utils/env.ts"
 import { TestExecutionSymbols } from "$utils/types.ts"
 
 export async function compilePackage(pkg: string, program?: string) {
@@ -86,6 +86,9 @@ async function compileTest(src: string, dest: string, testName: string, program:
     
     // generate the expected answer
     const result = await executeTest(test, program, env)
+
+    // remove files marked for discarding (they were only neccesary at input)
+    await discardFiles(test, env)
     
     // populate the archive
     await zip.addFile(UTEST_TEST_FNAME, testFile.readable)
@@ -95,6 +98,8 @@ async function compileTest(src: string, dest: string, testName: string, program:
         const file = await Deno.open(entry.path) // the file should not be closed, reading the stream will do it
         await zip.addFile(entry.name, file.readable, "out")
     }
+
+    await deleteEnv(env)
 
     // await Deno.remove(env, { recursive: true })
 
@@ -110,15 +115,23 @@ async function compileTest(src: string, dest: string, testName: string, program:
 // creates a temporary directory as the test environment, 
 // saves and prepares input files
 async function prepareTest(test: Test, zip: ZipFile): Promise<string> {
-	const env = await makeTemp() 
+	const env = await makeEnv() 
 
-    const files = await test[TestExecutionSymbols.collectFiles]()
+    const files = test[TestExecutionSymbols.collectFiles]()
 
-    for (const [path, file] of files) {
-        const [stream1, stream2] = file.tee(); // copy the stream
-        await Deno.writeFile(join(env, path), stream1)
-        await zip.addFile(path, stream2, "in")
+    for (const file of files.dynamicFiles) {
+        await Deno.writeFile(join(env, file.testPath), file.readable)
+    }
+
+    for (const file of files.importedFiles) {
+        const readable = (await Deno.open(file.realPath)).readable
+
+        const [stream1, stream2] = readable.tee(); // copy the stream
+        await Deno.writeFile(join(env, file.testPath), stream1)
+        await zip.addFile(file.testPath, stream2, "in")
     }
 
     return env
 }
+
+

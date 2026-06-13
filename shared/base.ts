@@ -1,6 +1,6 @@
 import { createHashStream } from '$shared/mixins/transform.ts'
 import type { TestOutput } from "utt"
-export const x = Symbol("x")
+
 /**
  * @abstract
  * @class Test

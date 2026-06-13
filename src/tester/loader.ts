@@ -1,10 +1,6 @@
 // This module is responsible for loading tests, in particular this is where Test classe sget instantiated
 
-import type { Test, TestOutput } from "utt"
-import { ZipReaderStream } from "@zip-js/zip-js"
-import { toJson, toText } from '@std/streams'
-import { encodeBase64Url } from '@std/encoding'
-import { UTEST_TEST_FNAME, UTEST_MODEL_OUT_FNAME, UTEST_STATUS_FNAME } from "$utils/constants.ts"
+import type { Test } from "utt"
 
 /**
  * Create an object of a class specified by `path`

@@ -1,24 +1,29 @@
 import type { BaseTest } from "$shared/base.ts"
 
 export const collectFiles = Symbol("collectFiles")
+export const toDiscard = Symbol("toDiscard")
+
+export type FilesObject = {
+    dynamicFiles: { testPath: string, readable: ReadableStream<Uint8Array> }[],
+    importedFiles: { testPath: string, realPath: string }[]
+}
 
 type Constructor<T = object> = abstract new (...args: any[]) => T;
 
 export const useFiles = function<T extends Constructor<BaseTest>>(Base: T) {
     abstract class WithFiles extends Base {
-        #files!: Map<string, Promise<ReadableStream<Uint8Array<ArrayBuffer>>> | ReadableStream<Uint8Array<ArrayBuffer>>>
+        #dynamicFiles!: FilesObject["dynamicFiles"]
+        #importedFiles!: FilesObject["importedFiles"]
+        #toDiscard!: string[]
 
         /**
          * Copies a file from your drive to the test file
          * @param testPath the path by which your program will access the file
          * @param realPath the real path to the file
          */
-        importFile(testPath: string, realPath: string) {
-            this.#files.set(testPath, new Promise((resolve, reject) => {
-                Deno.open(realPath).then((file: Deno.FsFile) => {
-                    resolve(file.readable)
-                }).catch(reason => reject(reason))             
-            }))
+        importFile(testPath: string, realPath: string, discard: boolean = false) {
+            this.#importedFiles.push({ testPath, realPath })
+            if (discard) this.#toDiscard.push(realPath)
         }
 
         /**
@@ -26,21 +31,26 @@ export const useFiles = function<T extends Constructor<BaseTest>>(Base: T) {
          * @param testPath the path by which your program will access the file
          * @param realPath the real path to the file
          */
-        textFile(testPath: string, content: string): void {
-            this.#files.set(testPath, Promise.resolve(new Blob([content]).stream()))
+        textFile(testPath: string, text: string, discard: boolean = false): void {
+            this.#dynamicFiles.push({ testPath, readable: new Blob([text]).stream()})
+            if (discard) this.#toDiscard.push(testPath)
         }
 
-        async [collectFiles](): Promise<Map<string, ReadableStream<Uint8Array<ArrayBufferLike>>>> {
-            this.#files = new Map()
+        [collectFiles](): FilesObject {
+            this.#importedFiles = []
+            this.#dynamicFiles = []
+            this.#toDiscard = []
 
             this.files?.()
 
-            // resolve all promises
-            for (const [k, v] of this.#files) {
-                this.#files.set(k, await v)
+            return {
+                importedFiles: this.#importedFiles,
+                dynamicFiles: this.#dynamicFiles
             }
-        
-            return this.#files as Map<string, ReadableStream<Uint8Array<ArrayBufferLike>>>
+        }
+
+        [toDiscard](): string[] {
+            return this.#toDiscard
         }
     }
 
