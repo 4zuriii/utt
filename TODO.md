@@ -1,8 +1,8 @@
 # PRIORITY
 
-- [ ] zip files need to contain both the state before and after the test, input files need to beard properly in the test running phase 
 - [ ] advanced test status reporting
 - [ ] Advanced input() <2>
+- [x] zip files need to contain both the state before and after the test, input files need to loaded properly in the test running phase 
 - [x] rewrite hash() to work as a pipe
 - [x] rewrite test validators to use streams
 - [x] rewrite loader.ts/runner.ts to work with new .utest format (.zip)
@@ -27,8 +27,8 @@
 - [ ] Performance tracking (/usr/bin/time, perf)
 - [ ] Valgrind support
 - [ ] rewrite runner/finder/compiler so that they can share code 
-- [ ] the order of assertions in check() should not impact whether a test can finish - rewrite check() to return an object declaring how each thing should be asserted 
-- [ ] keep test output flag
+- [ ] 'keep test output' flag
+- [x] the order of assertions in check() should not impact whether a test can finish - rewrite check() to return an object declaring how each thing should be asserted 
 
 # SDK
 
