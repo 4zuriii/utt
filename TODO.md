@@ -18,6 +18,7 @@
 - [ ] smaller executable (somehow)
 - [ ] 'unpack' command to extract test file from a zip
 - [ ] import the test file from a zip file using Blob objects / URL.createObject / URL.revokeObjectURL
+- [ ] test remotely on students via ssh <3>
 
 # Test execution
 
@@ -44,6 +45,8 @@
 
 - <1> - should this even be in the sdk? maybe as validation methods? or a whole new field? also, has to be able to be disabled/override by the user with flags
 - <2> - input() can either be a regular function like with the current API, or it could be a generator function. The current approach works fine on for small input, but generator functions can feed the program input on demand, which is better for memory efficiency, as we avoid an unneccesary copy. In BaseTest class the return value of input() should be: T | Iterable\<T\>
+- <3> - ssh into students, make a tmp folder, download a server program (another to do), copy over test files and execute the tests. Directly print the stdout via ssh (?)
+
 - breaking up files into a mixin is left for {break up sdk.ts}
 - by multi tests i mean a test that generates n (i. e. 100) instances of itself with randomized values, so esentially generators
 - define(): in general, methods that make it easier to create input. For example, if the program requires us to create objects before they can
