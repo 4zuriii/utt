@@ -62,7 +62,7 @@ export abstract class BaseTest {
 	 * this.importFile("path/the/program/expects", "path/to/file")
 	 * ```
 	 * 
-	 * @abstract
+	 * @optional
 	 */
 	files?(): void
 

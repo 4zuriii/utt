@@ -1,8 +1,8 @@
-import { readPackage, readAll } from "$src/tester/finder.ts"
-import type { TestDescriptor } from "$utils/types.ts"
+import { readPackage, readAll, TestDescriptor } from "$src/tester/finder.ts"
 import { runTests } from "$src/tester/runner.ts"
 import { terminateWorkers } from "@zip-js/zip-js"
 import { app } from "$src/cli.ts"
+import { getTestsDir } from "$utils/dirs.ts"
 
 type OptionsObject = {
 	program: string
@@ -29,9 +29,9 @@ export async function testCommand(pkg: string, options: OptionsObject) {
 	let descriptors: TestDescriptor[]
 
 	if (pkg) {
-		descriptors = await readPackage(pkg)
+		descriptors = await readPackage(await getTestsDir(), pkg)
 	} else {
-		descriptors = await readAll()
+		descriptors = await readAll(await getTestsDir())
 	}
 
 	await runTests(descriptors, program).catch((e: Error) => {

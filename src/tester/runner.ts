@@ -1,6 +1,6 @@
 // This module is repsonsible for running the tests
 
-import { TestExecutionSymbols, type TestDescriptor } from "$utils/types.ts"
+import { TestExecutionSymbols } from "$utils/types.ts"
 import { executeTest } from "$src/tester/executor.ts"
 import type { Test, TestOutput } from "utt"
 import { bold, brightGreen, brightRed, rgb24 } from "@std/fmt/colors"
@@ -13,6 +13,7 @@ import { encodeBase64Url } from "@std/encoding"
 import { toJson, toText } from "@std/streams"
 import { walk } from "@std/fs/walk"
 import { relative } from "@std/path/relative"
+import type { TestDescriptor } from "$src/tester/finder.ts"
 
 const orange = (text: string) => rgb24(text, 0xffa500)
 
@@ -80,8 +81,6 @@ export async function runTests(descriptors: TestDescriptor[], program: string) {
     }
 
     for (const test of descriptors) {    
-        const fullName = test.group ? test.group + "." + test.name : test.name
-
         const env = await makeEnv()
         
         try {
@@ -93,14 +92,14 @@ export async function runTests(descriptors: TestDescriptor[], program: string) {
 
             await discardFiles(utest.test, env)
 
-            console.log(orange(`Running test: ${bold(fullName)}...`))
+            console.log(orange(`Running test: ${bold(test.testName)}...`))
 
             const report: TestReport = await validateTest(utest, output, env)
 
             if (report.state) {
-                console.log(brightGreen(`[PASS] Test ${bold(fullName)} passed succesfully`))
+                console.log(brightGreen(`[PASS] Test ${bold(test.testName)} passed succesfully`))
             } else {
-                console.log(brightRed(`[FAIL] Test ${bold(fullName)} failed`))
+                console.log(brightRed(`[FAIL] Test ${bold(test.testName)} failed`))
                 console.log(brightRed(`Fail reason: ${report.error}`))
             }
         } catch (e) {

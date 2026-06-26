@@ -1,22 +1,77 @@
 // This module is responsible for finding all tests in the workspace which meet given criteria,
 // such as belonging to a package or a group
 
-import { TestDescriptor } from "$utils/types.ts"
-import { getTestsDir } from "$utils/dirs.ts"
+import { getSrcDir, getTestsDir } from "$utils/dirs.ts"
 import { join } from "@std/path/join"
-import { parse } from "@std/path/parse"
-import { UTEST_EXT } from "$utils/constants.ts"
+import { UTEST_EXT, UTEST_TEST_EXT } from "$utils/constants.ts"
+import { basename, parse } from "@std/path"
 
-export async function readAll() {
-	const path = await getTestsDir()
+export abstract class TestDescriptor {
+	static create(pkg: string, group: string, filename: string): TestDescriptor | null {
+		const { name, ext } = parse(filename)
 
+		if (ext == UTEST_EXT) {
+			return new CompiledTD(pkg, group, name)
+		} else if (ext == UTEST_TEST_EXT) {
+			return new UncompiledTD(pkg, group, name)
+		}
+
+		return null
+	}
+	
+	#name: string
+	#pkg: string
+	#group: string
+
+	constructor(pkg: string, group: string, name: string) {
+		this.#name = basename(name)
+		this.#pkg = pkg
+		this.#group = group
+	}
+
+	protected get pkg() {
+		return this.#pkg
+	}
+
+	protected get group() {
+		return this.#group
+	}
+
+	protected get name() {
+		return this.#name
+	}
+
+	get testName() {
+		if (this.#group) {
+			return this.#group + "." + this.#name
+		} else {
+			return this.#name
+		}
+	}
+
+	abstract resolveClassPath(): Promise<string>
+}
+
+class UncompiledTD extends TestDescriptor {
+	override async resolveClassPath(): Promise<string> {
+		return join(await getSrcDir(), this.pkg, this.group, this.name.concat(UTEST_TEST_EXT))
+	}
+}
+
+class CompiledTD extends TestDescriptor {
+	override async resolveClassPath(): Promise<string> {
+		return join(await getTestsDir(), this.pkg, this.group, this.name.concat(UTEST_EXT))
+	}
+}
+
+export async function readAll(path: string) {
 	let tests: TestDescriptor[] = []
 	const dirs = Deno.readDir(path)
 
 	for await (const dir of dirs) {
 		if (!dir.isDirectory) continue
 
-		const pkg = await readPackage(dir.name, path)
+		const pkg = await readPackage(path, dir.name)
 
 		tests = tests.concat(pkg)
 	}
@@ -24,9 +79,7 @@ export async function readAll() {
 	return tests
 }
 
-export async function readPackage(pkg: string, path?: string | undefined) {
-	path = path ?? await getTestsDir()
-
+export async function readPackage(path: string, pkg: string,) {
 	let tests: TestDescriptor[] = []
 
 	const groups = Deno.readDir(join(path, pkg))
@@ -34,30 +87,27 @@ export async function readPackage(pkg: string, path?: string | undefined) {
 	for await (const dir of groups) {
 		if (!dir.isDirectory) continue
 
-		const group = await readGroup(pkg, dir.name, path)
+		const group = await readGroup(path, pkg, dir.name)
 
 		tests = tests.concat(group)
 	}
 
-	tests = tests.concat(await readGroup(pkg, '', path))
+	tests = tests.concat(await readGroup(path, pkg))
 
 	return tests
 }
 
-async function readGroup(pkg: string, group: string, path: string) {
+async function readGroup(path: string, pkg: string, group: string = "") {
 	const tests: TestDescriptor[] = []
 
 	const files = Deno.readDir(join(path, pkg, group))
 
 	for await (const file of files) {
-		const f = parse(file.name)
-
 		if (!file.isFile) continue
-		if (f.ext !== UTEST_EXT) continue
 
-		const test = new TestDescriptor(pkg, group, f.name)
+		const test = TestDescriptor.create(pkg, group, file.name)
 
-		tests.push(test)
+		if (test) tests.push(test)
 	}
 
 	return tests
