@@ -1,4 +1,4 @@
-import { readPackage, readAll, TestDescriptor } from "$src/tester/finder.ts"
+import { readPackage, readAll, type TestDescriptor } from "$src/tester/finder.ts"
 import { runTests } from "$src/tester/runner.ts"
 import { terminateWorkers } from "@zip-js/zip-js"
 import { app } from "$src/cli.ts"

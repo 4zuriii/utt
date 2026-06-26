@@ -90,9 +90,9 @@ export async function runTests(descriptors: TestDescriptor[], program: string) {
 
             const output = await executeTest(utest.test, program, env)
 
-            await discardFiles(utest.test, env)
-
             console.log(orange(`Running test: ${bold(test.testName)}...`))
+            
+            await discardFiles(utest.test, env)
 
             const report: TestReport = await validateTest(utest, output, env)
 
